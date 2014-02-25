@@ -1,7 +1,9 @@
 #include "includes.h"
 
-/* Global variables */
-volatile uint8_t gState = STATE_WAIT;
+/* External Global variables */
+extern volatile uint8_t gState;
+extern uint8_t gLapCount;
+extern char gLastError;
 
 /* Internal global variables */
 volatile static uint8_t gPreviousState = STATE_WAIT;
@@ -31,13 +33,13 @@ void setState(char error)
 {
 	if(error == GOAL_POINT)
 	{
-		if(error != last_error)
+		if(error != gLastError)
 		{
-			lap_count++;
-			if(lap_count >= max_lap_count)
+			gLapCount++;
+			if(gLapCount >= MAX_LAP_COUNT)
 			{
 				setNewState(STATE_WAIT);
-				lap_count=0;
+				gLapCount=0;
 			}
 		}
 	}else if(error == CONTROL_NO_REF_POINT)
@@ -181,7 +183,7 @@ int PID(char error)
         gIntegerSum = (gIntegerSum < 0) ? -1* INTEGER_MAX : INTEGER_MAX;
     }
 
-    control += D * (error - last_error) + gIntegerSum;
+    control += D * (error - gLastError) + gIntegerSum;
 
     if(abs(control) > CONTROL_VALUE_MAX)
     {//limit control values

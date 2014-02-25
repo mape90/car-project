@@ -7,11 +7,16 @@ void synchronizeLoopSpeed(void);
 void loop(void);
 void setup(void);
 
-/* Internal global variables */
-volatile static uint8_t gLoopTimeNotElapsed = true;
 
-/* External global variables */
-extern volatile uint8_t gState;
+/* Global variables */
+volatile uint8_t gState = STATE_WAIT;
+volatile bool gLoopTimeNotElapsed = true;
+
+char gCurrentError = 0;
+char gLastError = 0;
+int gServoValue = 0;
+uint8_t gMotorSpeed = 0;
+uint8_t gLapCount = 0;
 
 /* ISR's */
 ISR(INT5_vect)
@@ -103,7 +108,7 @@ void loop(void)
 		setState(error);
 		calcControl(error, speed, angle);
 		executeControl(speed, angle);
-		last_error = error;
+		gLastError = error;
 	}else
 	{
 		//wait_state, road_not_found
@@ -118,5 +123,5 @@ void synchronizeLoopSpeed(void)
 	while(gLoopTimeNotElapsed);
 
 	gLoopTimeNotElapsed = true;
-	timer_setValue(TIMER_1, loop_time_ms);
+	timer_setValue(TIMER_1, LOOP_TIME_MS);
 }

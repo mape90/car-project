@@ -3,11 +3,15 @@
 #define MOTOR_FORWARD 1
 #define MOTOR_BACKWARD 0
 
-volatile uint16_t tacho_val = 0;
+/* External global variables */
+extern uint8_t gMotorSpeed;
+
+/* Internal global variables */
+volatile static uint16_t gTachometerValue = 0;
 
 void setMotorSpeed(int speed){
-    tacho_val = readTachometer();
-    writeMotorPWM(motorPI(speed - tachometer2speed(tacho_val, (speed<0)? MOTOR_BACKWARD : MOTOR_FORWARD)));
+    gTachometerValue = readTachometer();
+    writeMotorPWM(motorPI(speed - tachometer2speed(gTachometerValue, (speed<0)? MOTOR_BACKWARD : MOTOR_FORWARD)));
 }
 
 void writeMotorPWM(int pwm) {
@@ -36,13 +40,14 @@ int tachometer2speed(uint16_t val, uint8_t dir){
     }
 }
 
-int motorPI(int error_in_speed){
-	int control = P_motor * error_in_speed;
-    int motor_I_sum = I_motor*error_in_speed;
+int motorPI(int errorInSpeed){
+	int control = MOTOR_P * errorInSpeed;
+    int motor_I_sum = MOTOR_I * errorInSpeed;
 
     //integer wind up
-    if(abs(motor_I_sum) > max_motor_I_value){
-        motor_I_sum = (motor_I_sum < 0) ? -max_motor_I_value : max_motor_I_value;
+    if(abs(motor_I_sum) > MOTOR_I_VALUE_MAX)
+    {
+        motor_I_sum = (motor_I_sum < 0) ? -1* MOTOR_I_VALUE_MAX : MOTOR_I_VALUE_MAX;
     }
     control += motor_I_sum;
 
