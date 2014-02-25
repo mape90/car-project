@@ -1,14 +1,19 @@
-#include "servo.h"
+#include "includes.h"
 
-void writeServoControl(char deg){
-    if(deg < min_servo_value){
-        deg = min_servo_value;
-        reportError(SEVO_UNDER_MIN_CONTROLL);
-    }else if(deg > max_control_value){
-        deg = max_control_value;
-        reportError(SERVO_OVER_MAX_CONTROL);
+void writeServoControl(char deg)
+{
+    if(deg < SERVO_VALUE_MIN)
+    {
+        deg = SERVO_VALUE_MIN;
+        reportError(ERR_SERVO_UNDER_MIN_CONTROL);
     }
+    else if(deg > CONTROL_VALUE_MAX)
+    {
+        deg = CONTROL_VALUE_MAX;
+        reportError(ERR_SERVO_OVER_MAX_CONTROL);
+    }
+
     TCNT1 = 0;
-    OCR1A = SERVO_MIN_PULSE + (deg + 90) * PULSE_WIDTH; 
+    OCR1A = SERVO_PULSE_MIN + (deg + 90) * SERVO_PULSE_WIDTH;
 }
- 
+
