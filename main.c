@@ -2,48 +2,6 @@
 #include <avr/interrupt.h>
 #include <inttypes.h>
 
-/*
- * he servo-PWM is connected to the A output of the Timer/Counter1 subsystem (pin PB5 of ATMega2560). 
- * The motor-PWM is connected to the A output of the Timer/Counter4 subsystem (pin PH3 of ATMega2560). 
- * 
- */
-
-/*
- * Motor (Timer4)
- * INA - PK0 (ADC8)
- * INB - PK1 (ADC9)
- * ENA - PK2 (INPUT)
- * ENB - PK3 (INPUT)
- * 
- */
-
-/*
- * Servo (Timer1)
- * PWM - PB5 (OC1A)
- * 
- */
-
-/*
- * Tachometer (Timer5)
- * Signal - PL2 (T5)
- * 
- */
-
-/*
- * LCD
- * TX - PD2 (RXD1)
- * TX - PD3 (TXD1)
- */
-
-/*
- * Led
- * PC0 - led0 
- * PC1 - led1
- * 
- * Button (HIGH when not pushed)
- * PE5 (INT5)
- */
-
 
 #define LEDS_PORT PORTC
 #define LEDS_DDR  DDRC
@@ -81,7 +39,7 @@ const uint8_t P = 1;
 const uint8_t I = 0;
 const uint8_t D = 0;
 
-const uint8_t no_reference_point = 200; 
+const uint8_t no_reference_point = 101; 
 const uint8_t goal_point = 100;
 
 const uint8_t motor_straight_speed = 180;
@@ -95,14 +53,20 @@ const uint8_t finding_road_state = 3;
 const uint8_t road_not_found = 4;
 
 
+
+
 //GLOBAL VARIABLES
-int last_error = 0;
+
+volatile uint8_t state = wait_state;
+volatile uint8_t previous_state = wait_state;
+
+char error_current = 0;
+char last_error = 0;
+
 int integer_sum = 0;
 
 int servo_value = 0;
 uint8_t motor_speed = 0;
-
-uint8_t sensor_values = 0;
 
 
 //Function definations
@@ -180,6 +144,10 @@ ISR(TIMER0_OVF_vect){
     }
 }
 
+ISR(INT5_vect){
+	handleButton();
+}
+
 //-----------------------------------//
 
 void main(void){
@@ -195,28 +163,75 @@ void setup(void){
 }
 
 void loop(void){
-    readIOValues();
-    filterIOData();
-    calcControl();
-    executeControl();
+	if(state == running_state || state == finding_road_state){
+		char error = calcError(readBumper());
+		setState(error);
+		calcControl(error);
+		executeControl();
+		last_error = error;
+	}else{
+		//wait_state, road_not_found
+		//do nothing
+	}
     updateLcd();
 }
 
-void readIOValues(void){
-    sensor_values = SENSORS_PIN; //read sensor port data
-    tacho_val = tacho_count;
+
+void setNewState(uint8_t new_state){
+	uint8_t temp = SREG;
+	cli();
+	previous_state = state;
+	state = new_state;
+	SREG = temp;
 }
 
-void filterIOData(void){
-    return;
+inline void handleFindTimer(){
+	setNewState(road_not_found);
+}
+
+void setFindTimer(){
+	//set timer on if it isnt running
+}
+
+void handleButton(void){
+	switch(state){
+		case wait_state:
+			setNewState(running_state);
+			break;
+		case running_state:
+		case road_not_found:
+			setNewState(wait_state);
+			break;
+		default:
+			//LCD info?
+			break;
+	}
+}
+
+uint8_t lap_count = 0;
+const uint8_t max_lap_count = 1;
+
+void setState(char error){
+	if(error == goal_point){
+		lap_count++;
+		if(lap_count >= max_lap_count){
+			setNewState(wait_state);
+		}
+	}else if(error == no_reference_point){
+		setNewState(finding_road_state);
+	}else{
+		setNewState(running_state);
+	}
+}
+
+inline void readBumper(void){
+    return SENSORS_PIN; //read sensor port data
 }
 
 void calcControl(void){
 	char error = calcError();
 	if(error == no_reference_point){//do what is needed to do when track is lost
 		
-		direction = pidValue2Deg(PID(-7));
-		motor_speed = calcMotorSpeed(-7);
 	}else{
 		direction = pidValue2Deg(PID(error));
 		motor_speed = calcMotorSpeed(error);
@@ -237,7 +252,9 @@ void calcMotorSpeed(char val){
 	}
 }
 
-char calcError(void){
+
+//TODO add goal_point finding
+char calcError(uint8_t sensor_values){
 	char error = 0;
 	char most_left = -1;
 	char most_right = -1;
