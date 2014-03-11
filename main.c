@@ -1,6 +1,7 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <inttypes.h>
+#include <stdbool.h>
 
 
 #define LEDS_PORT PORTC
@@ -42,7 +43,7 @@ const uint8_t D = 0;
 const uint8_t no_reference_point = 101; 
 const uint8_t goal_point = 100;
 
-const uint8_t motor_straight_speed = 180;
+const uint8_t motor_straight_speed = 255/3;
 const uint8_t motor_mid_turn_speed = 150;
 const uint8_t motor_max_turn_speed = 100;
 
@@ -52,8 +53,7 @@ const uint8_t running_state = 2;
 const uint8_t finding_road_state = 3;
 const uint8_t road_not_found = 4;
 
-
-
+const uint8_t loop_time_ms = 100;
 
 //GLOBAL VARIABLES
 
@@ -93,22 +93,22 @@ void writeServoControl(char deg);
  * 
  */
 
-void writeMotorControl(uint8_t speed, uint8_t dir);
-void setMotorPWM(uint8_t val);
-void setMotorStatus(uint8_t enable);
 
-uint8_t motorPI(uint8_t error);
+void setMotorPWM(uint8_t val);
+//void setMotorStatus(uint8_t enable);
+
+volatile uint8_t need_waiting = true;
 
 
 //--------------TIMER-----------------//
 
 const uint8_t timer_max_count = 3;
-const uint8_t timer_1 = 1;
-const uint8_t timer_2 = 2;
-const uint8_t timer_3 = 3;
+const uint8_t timer_1 = 0;
+const uint8_t timer_2 = 1;
+const uint8_t timer_3 = 2;
 
-inline void timer_1_function(void){
-    
+inline void dissable_wait(void){
+    need_waiting = false;
 }
 inline void timer_2_function(void){
 
@@ -128,7 +128,7 @@ ISR(TIMER0_OVF_vect){
                 timer_set_value[i] = 0;
                 switch(i){
                     case timer_1:
-                        timer_1_function();
+                        dissable_wait();
                         break;
                     case timer_2:
                         timer_2_function();
@@ -150,16 +150,30 @@ ISR(INT5_vect){
 
 //-----------------------------------//
 
+
+
 void main(void){
     setup();
     while(1){
-        loop();
+		loop();
+		waitUntilTimerEnd();
     }
+}
+
+void waitUntilTimerEnd(){
+	while(need_waiting){}
+	need_waiting = true;
+	timer_set_value[timer_1] = loop_time_ms;
 }
 
 void setup(void){
     // init
 	// wait for putton pressed to start driving
+	
+	TCCR5B = _BV(CS52) | _BV(CS51);
+	
+	timer_set_value[timer_1] = loop_time_ms;
+	TCNT5 = 0;
 }
 
 void loop(void){
@@ -175,7 +189,6 @@ void loop(void){
 	}
     updateLcd();
 }
-
 
 void setNewState(uint8_t new_state){
 	uint8_t temp = SREG;
@@ -212,7 +225,7 @@ uint8_t lap_count = 0;
 const uint8_t max_lap_count = 1;
 
 void setState(char error){
-	if(error == goal_point){
+	if(error != last_error && error == goal_point){
 		lap_count++;
 		if(lap_count >= max_lap_count){
 			setNewState(wait_state);
