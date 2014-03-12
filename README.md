@@ -55,17 +55,30 @@ Button
 * handling routine for "find track timer" timeout
 * event timer routines to setup future events
 * PID
+* Loop cycle time synchronizer & constant loop time value
 
-### Setup routines ToDo
+## Setup routines
+
+### Already Completed
+* Timer 0 clock & mode (event timer)
+* Timer 1 clock & mode (servo pwm)
+
+* Timer 5 clock & mode (tachometer)
+* enable global interrups
+* servo init (center pos)
+
+### Functionalities ToDo
 * DDR values (port directions)
-* 
+* Timer 4 clock & mode (motor pwm)
 
 
 ### Functionality ToDo
 * Count loops
 * Check if "max loops" reached
 * enable timer for finding track (timeout for search)
-* Calculate operation logic based on PID values / errors
+* Calculate operation logic based on  errors / states
+* Calculate turning degree based on PID
+* (optional) WatchDog routine
 
 ## Front Bumper (reading/reporting position)
 ### Already completed
@@ -90,6 +103,7 @@ Button
 
 ### Functions ToDo
 * SetMotorSpeed 
+* Tachometer value to speed (scaling)
 
 ##User Interface (diagnostics)
 ### Already completed
@@ -97,6 +111,7 @@ Button
 - Set next state based on current state
 
 ### Functions ToDO
+- Report errors
 - Send text to LCD (lib?)
 - Update LCD status information
 - Set LED states based on "operation mode"
