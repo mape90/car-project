@@ -57,9 +57,19 @@ Button
 * PID
 * Loop cycle time synchronizer & constant loop time value
 
-### Setup routines ToDo
+## Setup routines
+
+### Already Completed
+* Timer 0 clock & mode (event timer)
+* Timer 1 clock & mode (servo pwm)
+
+* Timer 5 clock & mode (tachometer)
+* enable global interrups
+* servo init (center pos)
+
+### Functionalities ToDo
 * DDR values (port directions)
-* 
+* Timer 4 clock & mode (motor pwm)
 
 
 ### Functionality ToDo
