@@ -79,5 +79,9 @@ const uint8_t max_lap_count = 1;
 uint16_t timers_current_value[timer_count];
 uint16_t timer_set_value[timer_count];
 
+const uint16_t max_motor_controll = 65536/3;
+const uint16_t max_motor_I_value = max_motor_controll;
+const uint8_t P_motor = 1;
+const uint8_t I_motor = 0;
 
 #endif

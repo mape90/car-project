@@ -85,16 +85,31 @@ void waitUntilTimerEnd(){
 }
 
 void setup(void){
-    // init
-	// wait for putton pressed to start driving
-	
-	TCCR5B = _BV(CS52) | _BV(CS51);
-	
-	timer_set_value[timer_1] = loop_time_ms;
-	TCNT5 = 0;
     
-    TCCR1A |= (1<<COM1A1);//enable servo
+    DDRL = (1 << DDRL2)
+    
+    //init timer 0 (Events)
+    TCCR0B |= ((1 << CS01)|(1 << CS00)); // 64
+    TCNT0 = 0;
+    TIMSK0 |= _BV(TOIE0);
+  
+    //init timer 1 (Servo)
+    ICR1 = 40000;
+    TCCR1A |= (1<<WGM11) | (1<<COM1A1);
+    TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11);
+    
+    //init timer 4 (Motor)
+    TCCR4B = WGM42 | WGM41 | WGM40;
+    TCNT4 = 0;
+    
+    //init timer 5 (Tachometer)
+	TCCR5B = _BV(CS52) | _BV(CS51);
+    TCNT5 = 0;
+    
+	timer_set_value[timer_1] = loop_time_ms;
+    
     writeServoControl(0);
+    sei();
 }
 
 void loop(void){
