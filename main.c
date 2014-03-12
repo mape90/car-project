@@ -252,19 +252,8 @@ void calcControl(void){
 }
 
 void pidValue2Deg(char val){
-	return 
+	return val;
 }
-
-void calcMotorSpeed(char val){
-	if(val == 0){
-		return motor_straight_speed;
-	}else if(val == -7 || val == 7){
-		return motor_max_turn_speed;
-	}else{
-		return motor_mid_turn_speed;
-	}
-}
-
 
 //TODO add goal_point finding
 char calcError(uint8_t sensor_values){
@@ -305,15 +294,8 @@ char calcError(uint8_t sensor_values){
 }
 
 void executeControl(void){
-    writeServoControl(direction);
-    writeMotorControl(motor_speed, motor_dir);
-}
-
-void updateLcd(void){
-	//show state
-    //show error
-	//show direction and speed
-	return;
+    //Servo
+    //motor
 }
 
 int PID(char error){
@@ -330,50 +312,4 @@ int PID(char error){
         control = (control < 0) ? -max_control_value : max_control_value;
     }
     return control;
-}
-
-void writeMotorControl(uint8_t motor_speed){
-    if(motor_speed){
-        if(!motor_status){
-            setMotorStatus(MOTOR_ON);
-        }
-        setMotorPWM(motor_speed);
-    }else{
-        if(motor_status){
-            setMotorStatus(MOTOR_OFF);
-        }
-    }
-}
-
-void setServoStatus(uint8_t status){
-    if(status){
-        TCCR1A |= (1<<COM1A1);//enable servo
-    }else{
-        TCCR1A &= ~(1<<COM1A1);//dissable servo
-    }
-}
-
-void writeServoControl(char direction){
-    if(direction < min_servo_value){
-        direction = min_servo_value;
-        reportError(SEVO_UNDER_MIN_CONTROLL);
-    }else if(direction > max_control_value){
-        direction = max_control_value;
-        reportError(SERVO_OVER_MAX_CONTROL);
-    }
-    TCNT1 = 0;
-    OCR1A = SERVO_MIN_PULSE + (direction + 90) * PULSE_WIDTH; 
-}
-
-void setMotorPWM(uint8_t speed){
-	//set motor pwm pulse width
-}
-
-void setMotorStatus(uint8_t status){
-    motor_status = status;
-    if(status){
-        //enable motor clock
-    }else{
-        //dissable motor clock and set motor pins to ground
-    }
 }
