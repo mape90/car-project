@@ -31,7 +31,7 @@ Tachometer
 
 LCD
 =======
- * TX - PD2 (RXD1)
+ * RX - PD2 (RXD1)
  * TX - PD3 (TXD1)
 
 Led
