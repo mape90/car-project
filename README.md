@@ -43,3 +43,63 @@ Button
 =======
  *(HIGH when not pushed)
  * PE5 (INT5)
+ 
+
+
+#Done / ToDo List
+
+## General Logic
+###Already completed
+* Different states for "Find tract", "drive", "wait", "track lost permanetly"
+* Set state -function
+* handling routine for "find track timer" timeout
+* event timer routines to setup future events
+* PID
+
+### Setup routines ToDo
+* DDR values (port directions)
+* 
+
+
+### Functionality ToDo
+* Count loops
+* Check if "max loops" reached
+* enable timer for finding track (timeout for search)
+* Calculate operation logic based on PID values / errors
+
+## Front Bumper (reading/reporting position)
+### Already completed
+* Read bumpers
+
+
+### Functions ToDo
+
+
+##Servo (turning)
+
+### Already completed
+* Initilize timer clock / prescaler
+* Functions
+
+
+##Motor & Tachometer (speed, direction, feedback)
+### Already completed
+* Calc speed
+* Read tachometer
+* Calculate PI
+
+### Functions ToDo
+* SetMotorSpeed 
+
+##User Interface (diagnostics)
+### Already completed
+- Read button (ISR)
+- Set next state based on current state
+
+### Functions ToDO
+- Send text to LCD (lib?)
+- Update LCD status information
+- Set LED states based on "operation mode"
+
+ 
+
