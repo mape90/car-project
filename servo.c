@@ -1,13 +1,5 @@
 #include "servo.h"
 
-void setServoStatus(uint8_t status){
-    if(status){
-        TCCR1A |= (1<<COM1A1);//enable servo
-    }else{
-        TCCR1A &= ~(1<<COM1A1);//dissable servo
-    }
-}
-
 void writeServoControl(char deg){
     if(deg < min_servo_value){
         deg = min_servo_value;

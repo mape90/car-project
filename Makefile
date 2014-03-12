@@ -1,10 +1,10 @@
 # Target filename
 #   All output files will start with this (TARGET.elf, TARGET.hex, etc.)
 #   You can select this for your liking. Remember to run `make clean` before changing this value.
-TARGET := car
+TARGET := main
 
 # List of source files to be build (seperated by space)
-SRC := car.c
+SRC := main.c
 
 # On this course we will use arduino mega boards, so there is no need to change this
 #BOARD := arduino_mega
@@ -32,6 +32,6 @@ PORT := /dev/ttyUSB0
 # Yaamake is installed on computers in the exercise lab, but if you need it on your
 #  computer get it from https://github.com/raphendyr/yaamake
 # If you do not want or can't use yaamake, use the provided MAkefile.alternative instead.
-include $(shell /home/mp/Ohjelmointi/t-106-5300/yaamake/yaamake --include-path --require 1.1)
+include $(shell yaamake --include-path --require 1.1)
 
 # run 'make help' for more information
