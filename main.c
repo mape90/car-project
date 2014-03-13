@@ -78,6 +78,10 @@ void main(void){
     }
 }
 
+/*
+ * This function will 
+ * 
+ */
 void waitUntilTimerEnd(){
 	while(need_waiting){}
 	need_waiting = true;
@@ -85,9 +89,7 @@ void waitUntilTimerEnd(){
 }
 
 void setup(void){
-    
-    DDRL = (1 << DDRL2)
-    
+        
     //init timer 0 (Events)
     TCCR0B |= ((1 << CS01)|(1 << CS00)); // 64
     TCNT0 = 0;
@@ -99,11 +101,15 @@ void setup(void){
     TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11);
     
     //init timer 4 (Motor)
-    TCCR4B = WGM42 | WGM41 | WGM40;
-    TCNT4 = 0;
+    DDRH |= (1 << 3);  
+    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41);
+    OCR4A = 0; //set motor speed to zero
+    DDRK |= _BV(0) | _BV(1); //INA and INB
+    PORTK = 0x00;
+    
     
     //init timer 5 (Tachometer)
-	TCCR5B = _BV(CS52) | _BV(CS51);
+	TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
     
 	timer_set_value[timer_1] = loop_time_ms;
@@ -193,7 +199,6 @@ void pidValue2Deg(char val){
 	return val;
 }
 
-//TODO add goal_point finding
 char calcError(uint8_t sensor_values){
 	char error = 0;
 	char most_left = -1;
