@@ -109,10 +109,10 @@ void setup(void){
     
     
     //init timer 5 (Tachometer)
-	TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
+    TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
     
-	timer_set_value[timer_1] = loop_time_ms;
+    timer_set_value[timer_1] = loop_time_ms;
     
     writeServoControl(0);
     sei();
@@ -164,17 +164,20 @@ void handleButton(void){
 }
 
 void setState(char error){
-	if(error != last_error && error == goal_point){
-		lap_count++;
-		if(lap_count >= max_lap_count){
-			setNewState(wait_state);
+	if(error == goal_point){
+		if(error != last_error){
+			lap_count++;
+			if(lap_count >= max_lap_count){
+				setNewState(wait_state);
+				lap_count=0;
+			}
 		}
 	}else if(error == no_reference_point){
 		setNewState(finding_road_state);
 	}else{
-        if(state != running_state){
-            setNewState(running_state);
-        }
+        	if(state != running_state){
+            		setNewState(running_state);
+        	}
 	}
 }
 
@@ -186,10 +189,10 @@ void calcControl(void){
 	char error = calcError();
 	if(error == no_reference_point){
 		//do what is needed to do when track is lost
-	}else if(erro == goal_point){
-        direction = pidValue2Deg(PID(0));
-        motor_speed = calcMotorSpeed(0);
-    }else{
+	}else if(error == goal_point){
+        	direction = pidValue2Deg(PID(0));
+        	motor_speed = calcMotorSpeed(0);
+    	}else{
 		direction = pidValue2Deg(PID(error));
 		motor_speed = calcMotorSpeed(error);
 	}
