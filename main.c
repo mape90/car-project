@@ -255,8 +255,8 @@ char calcError(uint8_t sensor_values){
 }
 
 void executeControl(void){
-    //Servo
-    //motor
+    writeServoControl(direction);//Servo
+    setMotorSpeed(motor_speed);//motor
 }
 
 int PID(char error){
