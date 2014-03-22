@@ -122,8 +122,10 @@ void loop(void){
 	if(state == running_state || state == finding_road_state){
 		char error = calcError(readBumper());
 		setState(error);
-		calcControl(error);
-		executeControl();
+                char speed;
+                uint8_t angle;
+		calcControl(error, speed, angle);
+		executeControl(speed, angle);
 		last_error = error;
 	}else{
 		//wait_state, road_not_found
@@ -184,17 +186,18 @@ void setState(char error){
 inline void readBumper(void){
     return SENSORS_PIN; //read sensor port data
 }
-
-void calcControl(void){
-	char error = calcError();
+const char no_reference_speed = -120;
+void calcControl(uint8_t error, char speed, uint8_t angle){
 	if(error == no_reference_point){
 		//do what is needed to do when track is lost
+                angle = pidValue2Deg(PID(0));
+                speed = calcMotorSpeed(no_reference_speed);//TODO
 	}else if(error == goal_point){
-        	direction = pidValue2Deg(PID(0));
-        	motor_speed = calcMotorSpeed(0);
+        	angle = pidValue2Deg(PID(0));
+        	speed = calcMotorSpeed(0);
     	}else{
-		direction = pidValue2Deg(PID(error));
-		motor_speed = calcMotorSpeed(error);
+		angle = pidValue2Deg(PID(error));
+		speed = calcMotorSpeed(error);
 	}
 }
 
@@ -254,9 +257,9 @@ char calcError(uint8_t sensor_values){
 	return error;
 }
 
-void executeControl(void){
-    writeServoControl(direction);//Servo
-    setMotorSpeed(motor_speed);//motor
+void executeControl(char speed, uint8_t angle){
+    writeServoControl(angle);//Servo
+    setMotorSpeed(speed);//motor
 }
 
 int PID(char error){
