@@ -100,13 +100,12 @@ void loop(void)
 {
 	if(gState == STATE_RUNNING || gState == STATE_FINDING_ROAD)
 	{
-        // Todo: init speed & angle
-        char speed = 0;
-        uint8_t angle = 0;
+        char speed;
+        uint8_t angle;
 		char error = calcError(readBumper());
 
 		setState(error);
-		calcControl(error, speed, angle);
+		calcControl(error, &speed, &angle);
 		executeControl(speed, angle);
 		gLastError = error;
 	}else

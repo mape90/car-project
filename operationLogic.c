@@ -65,23 +65,23 @@ char calcMotorSpeed(char error)
     return error;
 }
 
-void calcControl(uint8_t error, char speed, uint8_t angle)
+void calcControl(uint8_t error, char* speed, uint8_t* angle)
 {
 	if(error == CONTROL_NO_REF_POINT)
 	{
 		//do what is needed to do when track is lost
-        angle = pidValue2Deg(PID(0));
-        speed = calcMotorSpeed(MOTOR_NO_REF_SPEED);//TODO
+        *angle = pidValue2Deg(PID(0));
+        *speed = calcMotorSpeed(MOTOR_NO_REF_SPEED);//TODO
 	}
 	else if(error == GOAL_POINT)
 	{
-        angle = pidValue2Deg(PID(0));
-        speed = calcMotorSpeed(0);
+        *angle = pidValue2Deg(PID(0));
+        *speed = calcMotorSpeed(0);
     }
     else
     {
-		angle = pidValue2Deg(PID(error));
-		speed = calcMotorSpeed(error);
+		*angle = pidValue2Deg(PID(error));
+		*speed = calcMotorSpeed(error);
 	}
 }
 

@@ -6,7 +6,7 @@
 
 #ifndef OPERATION_LOGIC_HH
 #define OPERATION_LOGIC_HH
-void calcControl(uint8_t error, char speed, uint8_t angle);
+void calcControl(uint8_t error, char* speed, uint8_t* angle);
 char calcMotorSpeed(char);
 char calcError(uint8_t sensor_values);
 
