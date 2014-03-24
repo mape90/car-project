@@ -8,34 +8,18 @@
 #include "servo.h"
 #include "UI.h"
 
-//Function definations
-/*
-void readIOValues(void);
-void filterIOData(void);
-void calcControl(void);
-void pidValue2Deg(char);
-void calcMotorSpeed(char);
-char calcError(void);
-void executeControl(void);
-void updateLcd(void);
-int  PID(char);
-
-
-void setServoStatus(uint8_t enable);
-void writeServoControl(char deg);
-*/
-
-
 //--------------TIMER-----------------//
 
 inline void dissable_wait(void){
     need_waiting = false;
 }
-inline void timer_2_function(void){
 
+inline void dissableGuiUpdateWait(void){
+    gui_can_update = true;
 }
-inline void timer_3_function(void){
-    
+
+inline void changeToRoadNotFoundState(void){
+    find_road_timer_out_of_time = true;
 }
 
 ISR(TIMER0_OVF_vect){
@@ -49,10 +33,10 @@ ISR(TIMER0_OVF_vect){
                         dissable_wait();
                         break;
                     case timer_2:
-                        timer_2_function();
+                        dissableGuiUpdateWait();
                         break;
                     case timer_3:
-                        timer_3_function();
+                        changeToRoadNotFoundState();
                         break;
                 }
             }else{
@@ -68,20 +52,17 @@ ISR(INT5_vect){
 
 //-----------------------------------//
 
-
-
 void main(void){
     setup();
     while(1){
+        //test_servo_loop()
+        //test_motor_loop()
+        //test_controll_loop()
 		loop();
 		waitUntilTimerEnd();
     }
 }
 
-/*
- * This function will 
- * 
- */
 void waitUntilTimerEnd(){
 	while(need_waiting){}
 	need_waiting = true;
@@ -107,29 +88,70 @@ void setup(void){
     DDRK |= _BV(0) | _BV(1); //INA and INB
     PORTK = 0x00;
     
-    
-    //init timer 5 (Tachometer)
-	TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
+    //init counter 5 (Tachometer)
+    TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
     
-	timer_set_value[timer_1] = loop_time_ms;
+    timer_set_value[timer_1] = loop_time_ms;
     
     writeServoControl(0);
-    sei();
+    sei(); // enable interrupts
+}
+
+void test_servo_loop(){ //dummy test
+    for(int i = 0;i<=90;i++){
+        writeServoControl(i);
+        delay_ms(10);
+    }
+    for(int i = 90;i>=-90;i--){
+        writeServoControl(i);
+        delay_ms(10);
+    }
+    for(int i = -90;i<=0;i++){
+        writeServoControl(i);
+        delay_ms(10);
+    }
+}
+
+void test_motor_loop(){ //dummy test
+    setMotorSpeed(300);
+}
+
+void test_controll_loop(){ //test everything elese than states
+    uint8_t angle;
+    char speed, error = calcError(readBumper());
+    //setState(error);
+    calcControl(error, speed, angle);
+    executeControl(0, angle);
+    last_error = error;   
 }
 
 void loop(void){
 	if(state == running_state || state == finding_road_state){
-		char error = calcError(readBumper());
-		setState(error);
-		calcControl(error);
-		executeControl();
-		last_error = error;
-	}else{
-		//wait_state, road_not_found
-		//do nothing
-	}
+		runCar();
+	}else if(state == road_not_found){
+		stopCar();
+	}else{ //wait_state
+        stopCar();
+    }
     updateLcd();
+}
+
+void runCar(void){
+    uint8_t angle;
+    char speed, error = calcError(readBumper());
+    setState(error);
+    calcControl(error, speed, angle);
+    executeControl(speed, angle);
+    last_error = error;
+}
+
+void stopCar(void){
+    executeControl(0, 0);
+}
+
+void findRoad(void){
+    executeControl(find_road_speed, 0); //TODO make more intelligent
 }
 
 void setNewState(uint8_t new_state){
@@ -140,11 +162,7 @@ void setNewState(uint8_t new_state){
 	SREG = temp;
 }
 
-void handleFindTimer(){
-	setNewState(road_not_found);
-}
-
-void setFindTimer(){
+void setFindTimer(void){
 	//set timer on if it isnt running
 }
 
@@ -153,27 +171,42 @@ void handleButton(void){
 		case wait_state:
 			setNewState(running_state);
 			break;
-		case running_state:
-		case road_not_found:
-			setNewState(wait_state);
-			break;
 		default:
-			//LCD info?
+			setNewState(wait_state);
 			break;
 	}
 }
+/*
+void handleState(void){
+    switch(state){
+		case wait_state:
+        case road_not_found:
+			break;
+		default:
+    }
+}*/
 
 void setState(char error){
-	if(error != last_error && error == goal_point){
-		lap_count++;
-		if(lap_count >= max_lap_count){
-			setNewState(wait_state);
+	if(error == goal_point){
+		if(error != last_error){
+			lap_count++;
+			if(lap_count >= max_lap_count){
+				setNewState(wait_state);
+				lap_count=0;
+			}
 		}
 	}else if(error == no_reference_point){
-		setNewState(finding_road_state);
+        if(state == finding_road_state){
+            if(find_road_timer_out_of_time){
+                setNewState(road_not_found);
+                writeLcdError(road_not_found_error_msg); //instant message write to lcd
+            }
+        }else{
+            setNewState(finding_road_state);
+        }		
 	}else{
         if(state != running_state){
-            setNewState(running_state);
+                setNewState(running_state);
         }
 	}
 }
@@ -182,22 +215,21 @@ inline void readBumper(void){
     return SENSORS_PIN; //read sensor port data
 }
 
-void calcControl(void){
-	char error = calcError();
+void calcControl(uint8_t error, int &speed, uint8_t &angle){
 	if(error == no_reference_point){
 		//do what is needed to do when track is lost
-	}else if(erro == goal_point){
-        direction = pidValue2Deg(PID(0));
-        motor_speed = calcMotorSpeed(0);
-    }else{
-		direction = pidValue2Deg(PID(error));
-		motor_speed = calcMotorSpeed(error);
+                angle = pidValue2Deg(PID(0));
+                speed = no_reference_point_speed;
+	}else if(error == goal_point){
+        	angle = pidValue2Deg(PID(0));
+        	speed = calcMotorSpeed(0);
+    	}else{
+		angle = PID(error);
+		speed = calcMotorSpeed(error);
 	}
 }
 
-void pidValue2Deg(char val){
-	return val;
-}
+
 
 char calcError(uint8_t sensor_values){
 	char error = 0;
@@ -251,9 +283,9 @@ char calcError(uint8_t sensor_values){
 	return error;
 }
 
-void executeControl(void){
-    //Servo
-    //motor
+void executeControl(char speed, uint8_t angle){
+    writeServoControl(angle);//Servo
+    setMotorSpeed(speed);//motor
 }
 
 int PID(char error){
