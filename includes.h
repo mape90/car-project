@@ -76,6 +76,19 @@
 #define TIMER_2                         ((uint8_t)1)
 #define TIMER_3                         ((uint8_t)2)
 
+/* LCD values */
+#define MYUBRR 103
+
+#define AUTO_BAUD 0x55
+#define RECEIVED 0x06
+#define DRAW_STRING 0x73
+#define COLUMN_0 0x00
+#define ROW_1 0x01
+#define ROW_2 0x02
+#define FONT 0x03
+#define WHITE 0xFF
+#define CLEAR 0x45
+
 /* Error codes */
 #define ERR_SERVO_UNDER_MIN_CONTROL     10
 #define ERR_SERVO_OVER_MAX_CONTROL      11
