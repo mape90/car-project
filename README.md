@@ -62,19 +62,25 @@ Button
 ### Already Completed
 * Timer 0 clock & mode (event timer)
 * Timer 1 clock & mode (servo pwm)
-
+* Timer 4 clock & mode (motor pwm)
 * Timer 5 clock & mode (tachometer)
 * enable global interrups
 * servo init (center pos)
 
-### Functionalities ToDo
-* DDR values (port directions)
-* Timer 4 clock & mode (motor pwm)
+### Functionality ToDo
+* DDR values (port directions) for LED & BUTTON
 
+### Functionalities
+
+
+
+## Operation Logic
+
+### Already completed
+* Check if "max loops" reached (done in setState() )
+* Count loops
 
 ### Functionality ToDo
-* Count loops
-* Check if "max loops" reached
 * enable timer for finding track (timeout for search)
 * Calculate operation logic based on  errors / states
 * Calculate turning degree based on PID
@@ -109,11 +115,11 @@ Button
 ### Already completed
 - Read button (ISR)
 - Set next state based on current state
+- Send text to LCD (lib?)
+- Update LCD status information
 
 ### Functions ToDO
 - Report errors
-- Send text to LCD (lib?)
-- Update LCD status information
 - Set LED states based on "operation mode"
 
  
