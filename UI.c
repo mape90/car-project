@@ -46,8 +46,8 @@ void USART_LCD_Init(unsigned int ubrr){
 
 	// LCD init
 	_delay_ms(510);
-	USART_Transmit(0x55);
-	unsigned char data_rec = 0x06;
+	USART_Transmit(AUTO_BAUD);
+	unsigned char data_rec = RECEIVED;
 	while (data_rec != USART_Receive())
 		;
 }
@@ -71,12 +71,12 @@ void LCD_state(uint8_t state){
 			break;
 	}	
 	
-	USART_Transmit(0x73);
-	USART_Transmit(0x00);
-	USART_Transmit(0x03);
-	USART_Transmit(0x03);
-	USART_Transmit(0xFF);
-	USART_Transmit(0xFF);
+	USART_Transmit(DRAW_STRING);
+	USART_Transmit(COLUMN_0);
+	USART_Transmit(ROW_1);
+	USART_Transmit(FONT);
+	USART_Transmit(WHITE);
+	USART_Transmit(WHITE);
 	{
 		char* c = state_char;
 		do {
@@ -84,7 +84,7 @@ void LCD_state(uint8_t state){
 		} while (*c++ != '\0');
 	}
 	USART_Transmit('\0');
-	while (0x06 != USART_Receive()); 
+	while (RECEIVED != USART_Receive()); 
 }
 
 void LCD_loops(uint8_t loop){
@@ -93,12 +93,12 @@ void LCD_loops(uint8_t loop){
 	itoa(loop, temp,10);
 	strcat(loop_char,temp);
 
-	USART_Transmit(0x73);
-	USART_Transmit(0x00);
-	USART_Transmit(0x05);
-	USART_Transmit(0x03);
-	USART_Transmit(0xFF);
-	USART_Transmit(0xFF);
+	USART_Transmit(DRAW_STRING);
+	USART_Transmit(COLUMN_0);
+	USART_Transmit(ROW_2);
+	USART_Transmit(FONT);
+	USART_Transmit(WHITE);
+	USART_Transmit(WHITE);
 	{
 		char* c = loop_char;
 		do {
@@ -106,10 +106,10 @@ void LCD_loops(uint8_t loop){
 		} while (*c++ != '\0');
 	}
 	USART_Transmit('\0');
-	while (0x06 != USART_Receive()); 
+	while (RECEIVED != USART_Receive()); 
 }
 
 void LCD_clear(void){
-	USART_Transmit(0x45);	
-	while (0x06 != USART_Receive()); 
+	USART_Transmit(CLEAR);	
+	while (RECEIVED != USART_Receive()); 
 }
