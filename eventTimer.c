@@ -3,7 +3,7 @@
 
 /* Global variables */
 static uint16_t timer_current_value[TIMER_MAX_COUNT];
-static uint16_t timer_set_value[TIMER_MAX_COUNT];
+static uint8_t timer_flags = 0;
 
 /* External Global Variables */
 extern volatile bool gLoopTimeNotElapsed;
@@ -16,28 +16,28 @@ inline void initEventTimer(void)
     TCNT0 = 0;
     TIMSK0 |= _BV(TOIE0);
 
-    timer_set_value[TIMER_1] = LOOP_TIME_MS;
+    timer_enable(TIMER_1, LOOP_TIME_MS);
 }
 
-inline void timer_setValue(uint8_t timer, uint16_t value)
+inline void timer_enable(uint8_t timer, uint16_t val)
 {
-    timer_set_value[timer] = value;
+    timer_current_value[timer] = val;
+    timer_flags |= (0x01 << timer);
+}
+inline void timer_disable(uint8_t timer){
+    timer_flags &= ~(0x01 << timer);
+}
+inline bool timer_enabled(uint8_t timer){
+    return timer_flags & (0x01 << timer);
+}
+inline bool timer_ended(uint8_t timer){
+    return timer_current_value[timer] == 0;
+}
+inline void timer_update(uint8_t timer){
+    timer_current_value[timer]--;
 }
 
-inline uint16_t timer_getValue(uint8_t timer)
-{
-    return timer_set_value[timer];
-}
 
-inline void timer_setCurrentValue(uint8_t timer, uint16_t value)
-{
-    timer_current_value[timer] = value;
-}
-
-inline uint16_t timer_getCurrentValue(uint8_t timer)
-{
-    return timer_current_value[timer];
-}
 inline void disable_wait(void)
 {
     gLoopTimeNotElapsed = false;

@@ -1,12 +1,4 @@
-#include <avr/io.h>
-#include <avr/interrupt.h>
-#include <inttypes.h>
-#include <stdbool.h>
-
 #include "includes.h"
-#include "motor.h"
-#include "servo.h"
-#include "UI.h"
 
 /* Function prototypes */
 
@@ -29,18 +21,16 @@ bool gFindRoadTimerElapsed = false;
 bool gUICanUpdate = true;
 
 
-
 /* ISR's */
 ISR(TIMER0_OVF_vect)
 {
     for(uint8_t i = 0;i < TIMER_MAX_COUNT;i++)
     {
-        if(timer_getValue(i) > 0)
+        if(timer_enabled(i))
         {
-            if(timer_getCurrentValue(i) > timer_getValue(i))
+            if(timer_ended(i))
             {
-                timer_setCurrentValue(i, 0);
-                timer_setValue(i, 0);
+                timer_disable(i);
                 switch(i)
                 {
                     case TIMER_1:
@@ -55,7 +45,7 @@ ISR(TIMER0_OVF_vect)
                 }
             }else
             {
-                timer_setCurrentValue(i, timer_getCurrentValue(i) + 1);
+                timer_update(i);
             }
         }
     }
