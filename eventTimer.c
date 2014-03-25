@@ -24,19 +24,27 @@ inline void timer_enable(uint8_t timer, uint16_t val)
     timer_current_value[timer] = val;
     timer_flags |= (0x01 << timer);
 }
-inline void timer_disable(uint8_t timer){
+inline void timer_disable(uint8_t timer)
+{
     timer_flags &= ~(0x01 << timer);
 }
-inline bool timer_enabled(uint8_t timer){
+inline bool timer_enabled(uint8_t timer)
+{
     return timer_flags & (0x01 << timer);
 }
-inline bool timer_ended(uint8_t timer){
+inline bool timer_ended(uint8_t timer)
+{
     return timer_current_value[timer] == 0;
 }
-inline void timer_update(uint8_t timer){
-    timer_current_value[timer]--;
+inline void timer_update(uint8_t timer)
+{
+    (timer_current_value[timer])--;
 }
 
+inline void timer_zero_value(uint8_t timer)
+{
+  timer_current_value[timer] = 0;
+}
 
 inline void disable_wait(void)
 {

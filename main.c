@@ -6,7 +6,6 @@ void synchronizeLoopSpeed(void);
 void loop(void);
 void setup(void);
 
-
 /* Global variables */
 volatile uint8_t gState = STATE_WAIT;
 volatile bool gLoopTimeNotElapsed = true;
@@ -19,7 +18,7 @@ uint8_t gLapCount = 0;
 uint16_t gTachometerValue = 0;
 bool gFindRoadTimerElapsed = false;
 bool gUICanUpdate = true;
-
+uint8_t gLCDErrorFlags = 0;
 
 /* ISR's */
 ISR(TIMER0_OVF_vect)
@@ -111,7 +110,7 @@ void synchronizeLoopSpeed(void)
 	while(gLoopTimeNotElapsed);
 
 	gLoopTimeNotElapsed = true;
-	timer_setValue(TIMER_1, LOOP_TIME_MS);
+	timer_enable(TIMER_1, LOOP_TIME_MS);
 }
 
 

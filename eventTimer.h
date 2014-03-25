@@ -8,6 +8,7 @@ void timer_disable(uint8_t timer);
 bool timer_enabled(uint8_t timer);
 bool timer_ended(uint8_t timer);
 void timer_update(uint8_t timer);
+void timer_zero_value(uint8_t timer);
 
 void disable_wait(void);
 void disableGuiUpdateWait(void);

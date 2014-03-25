@@ -3,23 +3,36 @@
 /* External global variables */
 extern uint8_t gState;
 extern bool gUICanUpdate;
+extern char gLastError;
+extern int gCurrentRPM;
+extern uint8_t gLCDErrorFlags;
+
 
 void LCD_update()
 {
     if(gUICanUpdate){
-	LCD_clear();
-        LCD_state(state);
-	LCD_error(error);
-	LCD_speed(speed);
+        LCD_clear();
+        LCD_state(gState);
+        LCD_error(&gLastError);
+        { //TODO: check if this can be done some other way
+            char temp_buffer[10];
+            itoa (gCurrentRPM, temp_buffer, 10);
+            LCD_speed(temp_buffer);
+        }
 
-	LCD_setTimer();
+        LCD_setTimer();
     }else{
         //Do nothing
     }
 }
 
-void reportError(uint8_t errNo) {
- // Todo: Implement this
+inline void reportError(uint8_t errNo)
+{
+    if(!(gLCDErrorFlags & (0x01 << errNo))){
+        //new error causes instant LCD update
+        LCD_WriteErrorFlags(errNo);
+        timer_zero_value(TIMER_2);
+    }
 }
 
 void handleButtonPress(void)
@@ -104,9 +117,11 @@ void LCD_state(uint8_t gState)
 		case STATE_ROAD_NOT_FOUND:
 			state_char = "State:ROAD_NOT_FOUND";
 			break;
+        default:
+			state_char = "Unknown State!";
 	}
 	LCD_Write_String(state_char,ROW_1);
-	
+
 }
 
 void LCD_error(char* error)
@@ -128,21 +143,17 @@ void LCD_clear(void)
 	USART_Transmit(CLEAR);
 	while (RECEIVED != USART_Receive());
 }
-void LCDClearErrorFlags(void)
+inline void LCDClearErrorFlags(void)
 {
-// Todo: implement this
-    //clear all error texts
-    //has_error = false;
+    gLCDErrorFlags = 0;
 }
 
-void LCD_WriteErrorFlags(uint8_t errNo)
+inline void LCD_WriteErrorFlags(uint8_t errNo)
 {
-// Todo: implement this
-    //has_error = true;
-    //write errror
+    gLCDErrorFlags |= (0x01 << errNo);
 }
 
 inline void LCD_setTimer(void)
 {
-    timer_setValue(TIMER_2, LCD_REFRESH_RATE_MS);
+    timer_enable(TIMER_2, LCD_REFRESH_RATE_MS);
 }

@@ -8,7 +8,7 @@ extern char gLastError;
 extern bool gFindRoadTimerElapsed;
 
 /* Internal global variables */
-volatile static uint8_t gPreviousState = STATE_WAIT;
+static volatile uint8_t gPreviousState = STATE_WAIT;
 static int gIntegerSum = 0;
 
 void runCar(void)
@@ -47,7 +47,7 @@ void handleFindTimer(){
 
 void setFindTimer()
 {
-    timer_setValue(TIMER_3, ROAD_SEARCH_TIME_MS);
+    timer_enable(TIMER_3, ROAD_SEARCH_TIME_MS);
 	//set timer on if it isnt running
 }
 

@@ -20,7 +20,7 @@ int getMotorRPM(void)
 
 void writeMotorPWM(int pwm)
 {
-    static uint16_t lastPWM = 0;
+    static int lastPWM = 0;
     if(lastPWM != pwm){
         //limit control values
         if(abs(pwm) > MOTOR_CONTROL_MAX){
