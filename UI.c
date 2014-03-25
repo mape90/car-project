@@ -39,6 +39,15 @@ void handleButtonPress(void)
     }
 }
 
+void USART_Transmit( unsigned char data)
+{
+	// Wait for empty transmit buffer
+	while ( !( UCSR1A & (1<<UDRE1)) )
+		;
+	// Put data into buffer, sends the data
+	UDR1 = data;
+}
+
 unsigned char USART_Receive(void){
 	// Wait for data to be received
 	while ( !(UCSR1A & (1<<RXC1)) )
