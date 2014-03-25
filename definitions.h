@@ -80,6 +80,9 @@
 #define COLUMN_0 0x00
 #define ROW_1 0x01
 #define ROW_2 0x02
+#define ROW_3 0x03
+#define ROW_5 0x05
+
 #define FONT 0x03
 #define WHITE 0xFF
 #define CLEAR 0x45
