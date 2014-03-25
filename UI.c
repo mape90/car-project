@@ -3,6 +3,11 @@
 /* External global variables */
 extern uint8_t gState;
 
+void LCD_update()
+{
+   // Todo: implement this
+}
+
 void reportError(uint8_t errNo) {
  // Todo: Implement this
 }
@@ -31,7 +36,7 @@ void USART_Transmit( unsigned char data){
 }
 
 unsigned char USART_Receive(void){
-	// Wait for data to be received 
+	// Wait for data to be received
 	while ( !(UCSR1A & (1<<RXC1)) )
 		;
 	// Get and return received data from buffer
@@ -63,14 +68,14 @@ void LCD_state(uint8_t state){
 		case STATE_RUNNING:
 			state_char = "State: RUNNING";
 			break;
-		case STATE_FINDING_ROAD: 
+		case STATE_FINDING_ROAD:
 			state_char = "State: FINDING_ROAD";
 			break;
 		case STATE_ROAD_NOT_FOUND:
 			state_char = "State:ROAD_NOT_FOUND";
 			break;
-	}	
-	
+	}
+
 	USART_Transmit(DRAW_STRING);
 	USART_Transmit(COLUMN_0);
 	USART_Transmit(ROW_1);
@@ -84,7 +89,7 @@ void LCD_state(uint8_t state){
 		} while (*c++ != '\0');
 	}
 	USART_Transmit('\0');
-	while (RECEIVED != USART_Receive()); 
+	while (RECEIVED != USART_Receive());
 }
 
 void LCD_loops(uint8_t loop){
@@ -106,10 +111,10 @@ void LCD_loops(uint8_t loop){
 		} while (*c++ != '\0');
 	}
 	USART_Transmit('\0');
-	while (RECEIVED != USART_Receive()); 
+	while (RECEIVED != USART_Receive());
 }
 
 void LCD_clear(void){
-	USART_Transmit(CLEAR);	
-	while (RECEIVED != USART_Receive()); 
+	USART_Transmit(CLEAR);
+	while (RECEIVED != USART_Receive());
 }

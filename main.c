@@ -112,7 +112,7 @@ void loop(void)
 		//do nothing
 	}
 
-    updateLcd();
+    LCD_update();
 }
 
 void synchronizeLoopSpeed(void)
