@@ -6,10 +6,13 @@ extern bool gUICanUpdate;
 
 void LCD_update()
 {
-   if(gUICanUpdate)
-   {
-        //LCD_Write();
-        LCD_setTimer();
+    if(gUICanUpdate){
+	LCD_clear();
+        LCD_state(state);
+	LCD_error(error);
+	LCD_speed(speed);
+
+	LCD_setTimer();
     }else{
         //Do nothing
     }
@@ -57,12 +60,28 @@ void USART_LCD_Init(unsigned int ubrr){
 	while (data_rec != USART_Receive());
 }
 
+void LCD_Write_String(char* str, uint8_t row)
+{
+	USART_Transmit(DRAW_STRING);
+	USART_Transmit(COLUMN_0);
+	USART_Transmit(row);
+	USART_Transmit(FONT);
+	USART_Transmit(WHITE);
+	USART_Transmit(WHITE);
+	{
+		char* c = str;
+		do {
+			USART_Transmit(*c);
+		} while (*c++ != '\0');
+	}
+	USART_Transmit('\0');
+	while (RECEIVED != USART_Receive());
+}
 
-
-void LCD_state(uint8_t state)
+void LCD_state(uint8_t gState)
 {
 	char* state_char;
-	switch (state)
+	switch (gState)
 	{
 		case STATE_WAIT:
 			state_char = "State: WAIT";
@@ -77,43 +96,22 @@ void LCD_state(uint8_t state)
 			state_char = "State:ROAD_NOT_FOUND";
 			break;
 	}
-
-	USART_Transmit(DRAW_STRING);
-	USART_Transmit(COLUMN_0);
-	USART_Transmit(ROW_1);
-	USART_Transmit(FONT);
-	USART_Transmit(WHITE);
-	USART_Transmit(WHITE);
-	{
-		char* c = state_char;
-		do {
-			USART_Transmit(*c);
-		} while (*c++ != '\0');
-	}
-	USART_Transmit('\0');
-	while (RECEIVED != USART_Receive());
+	LCD_Write_String(state_char,ROW_1);
+	
 }
 
-void LCD_loops(uint8_t loop){
-	char loop_char[] = "Loop: ";
-	char temp[10];
-	itoa(loop, temp,10);
-	strcat(loop_char,temp);
+void LCD_error(char* error)
+{
+	char str[25] = "Error: ";
+	strcat(str,error);
+	LCD_Write_String(str,ROW_2);
+}
 
-	USART_Transmit(DRAW_STRING);
-	USART_Transmit(COLUMN_0);
-	USART_Transmit(ROW_2);
-	USART_Transmit(FONT);
-	USART_Transmit(WHITE);
-	USART_Transmit(WHITE);
-	{
-		char* c = loop_char;
-		do {
-			USART_Transmit(*c);
-		} while (*c++ != '\0');
-	}
-	USART_Transmit('\0');
-	while (RECEIVED != USART_Receive());
+void LCD_speed(char* speed)
+{
+	char str[25] = "Speed: ";
+	strcat(str,speed);
+	LCD_Write_String(str,ROW_3);
 }
 
 void LCD_clear(void)
@@ -121,14 +119,14 @@ void LCD_clear(void)
 	USART_Transmit(CLEAR);
 	while (RECEIVED != USART_Receive());
 }
-void LCDClearErrors(void)
+void LCDClearErrorFlags(void)
 {
 // Todo: implement this
     //clear all error texts
     //has_error = false;
 }
 
-void LCD_WriteError(uint8_t errNo)
+void LCD_WriteErrorFlags(uint8_t errNo)
 {
 // Todo: implement this
     //has_error = true;
