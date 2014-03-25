@@ -5,9 +5,31 @@ extern volatile uint8_t gState;
 extern uint8_t gLapCount;
 extern char gLastError;
 
+extern bool gFindRoadTimerElapsed;
+
 /* Internal global variables */
 volatile static uint8_t gPreviousState = STATE_WAIT;
 static int gIntegerSum = 0;
+
+void runCar(void)
+{
+    uint8_t angle;
+    char speed, error = calcError(readBumper());
+    setState(error);
+    calcControl(error, &speed, &angle);
+    executeControl(speed, angle);
+    gLastError = error;
+}
+
+void stopCar(void)
+{
+    executeControl(0, 0);
+}
+
+void findRoad(void)
+{
+    executeControl(ROAD_FIND_SPEED_RPM, 0); //TODO make more intelligent
+}
 
 
 void setNewState(uint8_t newState)
@@ -23,7 +45,9 @@ void handleFindTimer(){
 	setNewState(STATE_ROAD_NOT_FOUND);
 }
 
-void setFindTimer(){
+void setFindTimer()
+{
+    timer_setValue(TIMER_3, ROAD_SEARCH_TIME_MS);
 	//set timer on if it isnt running
 }
 
@@ -44,7 +68,19 @@ void setState(char error)
 		}
 	}else if(error == CONTROL_NO_REF_POINT)
 	{
-		setNewState(STATE_FINDING_ROAD);
+        if (gState == STATE_FINDING_ROAD)
+        {
+            if (gFindRoadTimerElapsed)
+            {
+                setNewState(STATE_ROAD_NOT_FOUND);
+            }
+        }
+        else
+        {
+            setNewState(STATE_FINDING_ROAD);
+            setFindTimer();
+        }
+
 	}else
 	{
         if(gState != STATE_RUNNING)
@@ -61,8 +97,11 @@ inline uint8_t readBumper(void)
 
 char calcMotorSpeed(char error)
 {
-    // Todo: Implement this
-    return error;
+    if (error > -8 && error < 8)
+        return MOTOR_SPEED_MAX_RPM - abs(error)*MOTOR_SPEED_REDUCE;
+
+    else
+        return 0;
 }
 
 void calcControl(uint8_t error, char* speed, uint8_t* angle)
@@ -70,24 +109,19 @@ void calcControl(uint8_t error, char* speed, uint8_t* angle)
 	if(error == CONTROL_NO_REF_POINT)
 	{
 		//do what is needed to do when track is lost
-        *angle = pidValue2Deg(PID(0));
+        *angle = PID(0);
         *speed = calcMotorSpeed(MOTOR_NO_REF_SPEED);//TODO
 	}
 	else if(error == GOAL_POINT)
 	{
-        *angle = pidValue2Deg(PID(0));
+        *angle = PID(0);
         *speed = calcMotorSpeed(0);
     }
     else
     {
-		*angle = pidValue2Deg(PID(error));
+		*angle = PID(error);
 		*speed = calcMotorSpeed(error);
 	}
-}
-
-char pidValue2Deg(char val)
-{
-	return val;
 }
 
 char calcError(uint8_t sensorValues)
@@ -167,7 +201,7 @@ char calcError(uint8_t sensorValues)
 	return error;
 }
 
-void executeControl(char speed, uint8_t angle)
+void executeControl(int speed, uint8_t angle)
 {
     writeServoControl(angle);//Servo
     setMotorSpeed(speed);//motor

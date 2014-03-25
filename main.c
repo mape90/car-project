@@ -1,5 +1,12 @@
-#include "includes.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
+#include <inttypes.h>
+#include <stdbool.h>
 
+#include "includes.h"
+#include "motor.h"
+#include "servo.h"
+#include "UI.h"
 
 /* Function prototypes */
 
@@ -15,15 +22,15 @@ volatile bool gLoopTimeNotElapsed = true;
 char gCurrentError = 0;
 char gLastError = 0;
 int gServoValue = 0;
-uint8_t gMotorSpeed = 0;
+int gCurrentRPM = 0;
 uint8_t gLapCount = 0;
+uint16_t gTachometerValue = 0;
+bool gFindRoadTimerElapsed = false;
+bool gUICanUpdate = true;
+
+
 
 /* ISR's */
-ISR(INT5_vect)
-{
-	handleButtonPress();
-}
-
 ISR(TIMER0_OVF_vect)
 {
     for(uint8_t i = 0;i < TIMER_MAX_COUNT;i++)
@@ -40,10 +47,10 @@ ISR(TIMER0_OVF_vect)
                         disable_wait();
                         break;
                     case TIMER_2:
-                        timer_2_function();
+                        disableGuiUpdateWait();
                         break;
                     case TIMER_3:
-                        timer_3_function();
+                        changeToRoadNotFoundState();
                         break;
                 }
             }else
@@ -54,15 +61,21 @@ ISR(TIMER0_OVF_vect)
     }
 }
 
-int main(void) {
-    setup();
+ISR(INT5_vect){
+	handleButtonPress();
+}
 
-    while(1)
-    {
+//-----------------------------------//
+
+int main(void){
+    setup();
+    while(1){
+        //test_servo_loop()
+        //test_motor_loop()
+        //test_controll_loop()
 		loop();
 		synchronizeLoopSpeed();
     }
-
     return 0;
 }
 
@@ -83,37 +96,25 @@ void setup(void) {
     DDRK |= _BV(0) | _BV(1); //INA and INB
     PORTK = 0x00;
 
-
     //init timer 5 (Tachometer)
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
-
-
 
     writeServoControl(0);
     sei();
 }
 
-void loop(void)
-{
-	if(gState == STATE_RUNNING || gState == STATE_FINDING_ROAD)
-	{
-        char speed;
-        uint8_t angle;
-		char error = calcError(readBumper());
-
-		setState(error);
-		calcControl(error, &speed, &angle);
-		executeControl(speed, angle);
-		gLastError = error;
-	}else
-	{
-		//wait_state, road_not_found
-		//do nothing
-	}
-
+void loop(void){
+	if(gState == STATE_RUNNING || gState == STATE_FINDING_ROAD){
+		runCar();
+	}else if(gState == STATE_ROAD_NOT_FOUND){
+		stopCar();
+	}else{ //wait_state
+        stopCar();
+    }
     LCD_update();
 }
+
 
 void synchronizeLoopSpeed(void)
 {
@@ -122,3 +123,5 @@ void synchronizeLoopSpeed(void)
 	gLoopTimeNotElapsed = true;
 	timer_setValue(TIMER_1, LOOP_TIME_MS);
 }
+
+

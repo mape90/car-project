@@ -7,6 +7,8 @@ static uint16_t timer_set_value[TIMER_MAX_COUNT];
 
 /* External Global Variables */
 extern volatile bool gLoopTimeNotElapsed;
+extern bool gUICanUpdate;
+extern bool gFindRoadTimerElapsed;
 
 inline void initEventTimer(void)
 {
@@ -40,13 +42,15 @@ inline void disable_wait(void)
 {
     gLoopTimeNotElapsed = false;
 }
-inline void timer_2_function(void)
-{
 
+inline void disableGuiUpdateWait(void)
+{
+    gUICanUpdate = true;
 }
-inline void timer_3_function(void)
-{
 
+inline void changeToRoadNotFoundState(void)
+{
+    gFindRoadTimerElapsed = true;
 }
 
 //-----------------------------------//

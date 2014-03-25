@@ -9,6 +9,6 @@ void timer_setCurrentValue(uint8_t timer, uint16_t value);
 uint16_t timer_getCurrentValue(uint8_t timer);
 
 void disable_wait(void);
-void timer_2_function(void);
-void timer_3_function(void);
+void disableGuiUpdateWait(void);
+void changeToRoadNotFoundState(void);
 #endif

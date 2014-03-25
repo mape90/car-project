@@ -2,6 +2,10 @@
 #define DEFINITIONS_HH
 
 /* Settings */
+
+#define LCD_REFRESH_RATE_MS              500
+#define TICKS_PER_ROTATION              2
+#define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
 #define LOOP_TIME_MS                    100
 #define GOAL_MIN_WIDTH                  2
@@ -10,11 +14,13 @@
 #define I                               0
 #define D                               0
 
-#define MOTOR_SPEED_STRAIGHT            ((uint8_t)255/3)
-#define MOTOR_TURN_SPEED_MID            ((uint8_t)150)
-#define MOTOR_TURN_SPEED_MAX            ((uint8_t)100)
+#define MOTOR_SPEED_MAX_RPM             1000
+#define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
 
-#define MOTOR_CONTROL_MAX               65536/3
+#define MOTOR_SPEED_REDUCE              MOTOR_SPEED_MAX_RPM/9
+
+#define MOTOR_CONTROL_MAX               (65536/3)
+#define MOTOR_ACC_MAX                   1000
 #define MOTOR_I_VALUE_MAX               MOTOR_CONTROL_MAX
 
 #define MOTOR_P                         ((uint8_t)1)
@@ -37,12 +43,15 @@
 /* Pre-defined values */
 #define CONTROL_NO_REF_POINT            101
 
+#define MOTOR_BACKWARD                  0
+#define MOTOR_FORWARD                   1
 #define MOTOR_ON                        ((uint8_t)1)
 #define MOTOR_OFF                       ((uint8_t)0)
 #define MOTOR_NO_REF_SPEED              ((char)-120)
 
 #define SERVO_ON                        ((uint8_t)1)
 #define SERVO_OFF                       ((uint8_t)0)
+#define SERVO_CONTROL_VALUE_MAX         90
 
 #define CONTROL_VALUE_MAX               255
 #define INTEGER_MAX                     200
