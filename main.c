@@ -69,9 +69,7 @@ int main(void) {
 void setup(void) {
 
     //init timer 0 (Events)
-    TCCR0B |= ((1 << CS01)|(1 << CS00)); // 64
-    TCNT0 = 0;
-    TIMSK0 |= _BV(TOIE0);
+    initEventTimer();
 
     //init timer 1 (Servo)
     ICR1 = 40000;
@@ -90,7 +88,7 @@ void setup(void) {
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
 
-    initEventTimer();
+
 
     writeServoControl(0);
     sei();

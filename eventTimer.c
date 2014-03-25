@@ -2,13 +2,18 @@
 //--------------TIMER-----------------//
 
 /* Global variables */
-extern volatile bool gLoopTimeNotElapsed;
-
 static uint16_t timer_current_value[TIMER_MAX_COUNT];
 static uint16_t timer_set_value[TIMER_MAX_COUNT];
 
+/* External Global Variables */
+extern volatile bool gLoopTimeNotElapsed;
+
 inline void initEventTimer(void)
 {
+    TCCR0B |= ((1 << CS01)|(1 << CS00)); // 64
+    TCNT0 = 0;
+    TIMSK0 |= _BV(TOIE0);
+
     timer_set_value[TIMER_1] = LOOP_TIME_MS;
 }
 
