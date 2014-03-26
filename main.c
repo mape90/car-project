@@ -66,6 +66,7 @@ int main(void)
         //test_servo_loop();
         //test_motor_loop();
         test_controll_loop();
+        //test_tachometer_PI_loop();
 		//loop();
         LCD_Write_int((int)gBumperValue, 6);        
         synchronizeLoopSpeed();

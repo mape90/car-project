@@ -8,8 +8,8 @@ extern int gCurrentRPM;
 void motor_init(void)
 {
     DDRH |= (1 << MOTOR_PIN_PWM);
-    TCCR4A = (1 << COM4A0) |(1 << COM4A1) | (1 << WGM42) | (1 << WGM41) | (1 << WGM43); // Fast PWM
-    TCCR4B |= (1 << CS40); //
+    TCCR4A = (1 << COM4A1) | (1 << WGM41); // Fast PWM
+    TCCR4B |= (1 << CS40) | (1 << WGM42) | (1 << WGM43); //
     ICR4 = 0xffff;
     OCR4A = 0; //set motor speed to zero
     DDRK |= (1 << MOTOR_PIN_INA) | (1 << MOTOR_PIN_INB); //INA and INB
@@ -31,14 +31,15 @@ inline int getMotorRPM(void)
 
 void writeMotorPWM(int pwm)
 {
-	static int lastPWM = 0;
-    //limit control values
-    if(abs(pwm) > MOTOR_CONTROL_MAX){
-        pwm = (pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX;
-    }
+  
+    static int lastPWM = 0;
     //limit acceleration
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
+    }
+    //limit control values
+    if(abs(pwm) > MOTOR_CONTROL_MAX){
+        pwm = ((pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX);
     }
 	/*LCD_clear();
 	char bfr[5];
@@ -59,7 +60,7 @@ void writeMotorPWM(int pwm)
         }else{
             PORTK &= 0xfc;       //Counter-clockwise (CCW)
             PORTK |= (1 << MOTOR_PIN_INB);
-            OCR4A = abs(pwm);   //set pwm walue positive
+            OCR4A = abs(pwm);   //set pwm value positive
         }
         lastPWM = pwm;
     }
@@ -76,7 +77,8 @@ int tachometer2rpm(uint16_t val, uint8_t dir){
 }
 
 int motorPI(int error_in_speed){
-	int control = MOTOR_P * error_in_speed/MOTOR_SCALE_RPM;
+      error_in_speed /= MOTOR_SCALE_RPM;
+	int control = MOTOR_P * error_in_speed;
 	static int motor_I_sum = 0;
 
     motor_I_sum += MOTOR_I * error_in_speed;

@@ -7,7 +7,7 @@
 #define TICKS_PER_ROTATION              2
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
-#define LOOP_TIME_MS                    100
+#define LOOP_TIME_MS                    1000
 #define GOAL_MIN_WIDTH                  2
 #define GOAL_POINT                      100
 #define P                               5
@@ -23,12 +23,12 @@
 
 #define MOTOR_SCALE_RPM                 10
 
-#define MOTOR_CONTROL_MAX               (65536/3)
+#define MOTOR_CONTROL_MAX               (0xffff/3)
 #define MOTOR_ACC_MAX                   1000
 #define MOTOR_I_VALUE_MAX               MOTOR_CONTROL_MAX
 
-#define MOTOR_P                         ((uint8_t)30)
-#define MOTOR_I                         ((uint8_t)1)
+#define MOTOR_P                         ((uint8_t)20)
+#define MOTOR_I                         ((uint8_t)2)
 
 /* Port / pin -settings */
 #define BUMPER_REGISTER                 PINA       // Todo: set this to actual reg.

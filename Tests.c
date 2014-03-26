@@ -21,9 +21,12 @@ void test_tachometer_rpm_loop(){
 }
 
 void test_tachometer_PI_loop(){
-    writeMotorPWM(5000);
+    uint16_t rpm = tachometer2rpm(readTachometer(),1);
+    int controll_val = motorPI(1000-rpm);
+    writeMotorPWM(controll_val);
+    //writeMotorPWM(5000);
     LCD_clear();
-    LCD_Write_int(motorPI(tachometer2rpm(readTachometer(),1)-1500), 10);
+    LCD_Write_int((int)rpm, 10);
 }
 
 
