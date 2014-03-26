@@ -19,6 +19,7 @@ uint16_t gTachometerValue = 0;
 bool gFindRoadTimerElapsed = false;
 bool gUICanUpdate = true;
 uint8_t gLCDErrorFlags = 0;
+uint8_t gBumperValue = 0;
 
 /* ISR's */
 ISR(TIMER0_OVF_vect)

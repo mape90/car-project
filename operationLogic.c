@@ -102,7 +102,7 @@ bool isValidBumperValue(uint8_t bumperVal)
         itr = (itr << 1);
     }
 
-    return (counter >= 6 || conter <= 2);
+    return (counter >= 6 || counter <= 2);
 }
 void calcBumperValue(void)
 {
@@ -122,7 +122,7 @@ void calcBumperValue(void)
     bumperVal = BUMPER_REGISTER;
     if (isValidBumperValue(bumperVal))
     {
-        bumperBuffer[buffCusor++] = bumperVal;
+        bumperBuffer[buffCursor++] = bumperVal;
         valCounter++;
     }
     if (buffCursor >= BUMPER_READ_BUFF_SIZE)
@@ -138,7 +138,7 @@ void calcBumperValue(void)
         for(uint8_t j = 0; j < BUMPER_READ_BUFF_SIZE;j++)
         {
             for(uint8_t i = 0; i < sizeof(uint8_t); i++)
-                filter_values[i] += val[j] & (1<<i);
+                filter_values[i] += bumber_buffer[j] & (1<<i);
         }
 
         for(uint8_t i = 0;i < 8;i++)
