@@ -59,10 +59,10 @@
 #define CONTROL_VALUE_MAX               255
 #define INTEGER_MAX                     200
 
-#define SERVO_VALUE_MAX                 ((char)45)
-#define SERVO_VALUE_MIN                 ((char)-45)
-#define SERVO_PULSE_MIN                 ((uint16_t)2000)
-#define SERVO_PULSE_WIDTH               11
+#define SERVO_VALUE_MAX                 ((int)45)
+#define SERVO_VALUE_MIN                 ((int)-45)
+#define SERVO_PULSE_MIN                 ((int)2000)
+#define SERVO_PULSE_WIDTH               ((int)11)
 
 #define STATE_WAIT                      1
 #define STATE_RUNNING                   2

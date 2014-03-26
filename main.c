@@ -54,10 +54,10 @@ ISR(INT5_vect){
 int main(void){
     setup();
     while(1){
-        //test_servo_loop()
-        //test_motor_loop()
-        //test_controll_loop()
-		loop();
+        //test_servo_loop();
+        test_motor_loop();
+        //test_controll_loop();
+		//loop();
 		synchronizeLoopSpeed();
     }
     return 0;
