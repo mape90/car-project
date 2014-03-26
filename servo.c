@@ -4,7 +4,7 @@ static char gWheelOrientation = 0;
 
 void servo_init(void)
 {
-    DDR |= _BV(SERVO_PIN);
+    DDRB |= (1 << SERVO_PIN);
     ICR1 = 40000;
     TCCR1A |= (1<<WGM11) | (1<<COM1A1);
     TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11);
