@@ -134,9 +134,13 @@ char calcError(uint8_t sensorValues)
 
 	for(uint8_t i = 0;i < 8;i++)
 	{
+        LCD_clear();
+        _delay_ms(400);
+		LCD_Write_int(i);	
 		if(sensorValues & (0x80 >> i))
 		{
 			mostLeft = i;
+            
 			break;
 		}
 	}
@@ -151,7 +155,7 @@ char calcError(uint8_t sensorValues)
 	if(mostLeft < 0 || mostRight < 0)
 	{//no reference point found out of track
         if(lastError < 7){
-            error = lastError + (lastError < 0) ? 1: -1;
+            error = lastError + ((lastError < 0) ? 1: -1);
         }else{
             error = CONTROL_NO_REF_POINT;
         }

@@ -10,7 +10,7 @@
 #define LOOP_TIME_MS                    100
 #define GOAL_MIN_WIDTH                  2
 #define GOAL_POINT                      100
-#define P                               1
+#define P                               5
 #define I                               0
 #define D                               0
 
