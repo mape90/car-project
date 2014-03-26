@@ -17,11 +17,11 @@ char getServoAngle(void){
 
 void writeServoControl(int deg){
     if(gWheelOrientation != deg){
-	LCD_clear();	
+	/*LCD_clear();	
 	char bfr[5];
 	itoa(deg, bfr, 10);
 
-	LCD_Write_String(bfr, 1);
+	LCD_Write_String(bfr, 1);*/
 
 	char bfr2[10];
 	itoa((SERVO_PULSE_MIN + (deg + 90) * SERVO_PULSE_WIDTH), bfr2, 10);

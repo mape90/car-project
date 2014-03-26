@@ -13,7 +13,7 @@ void LCD_update()
     if(gUICanUpdate){
         LCD_clear();
         LCD_state(gState);
-        LCD_error(&gLastError);
+        LCD_error(gLastError);
         { //TODO: check if this can be done some other way
             char temp_buffer[10];
             itoa (gCurrentRPM, temp_buffer, 10);
@@ -101,32 +101,49 @@ void LCD_Write_String(char* str, uint8_t row)
 
 void LCD_state(uint8_t gState)
 {
-	char* state_char;
+	char state_char[15];
 	switch (gState)
 	{
 		case STATE_WAIT:
-			state_char = "State: WAIT";
+            strncpy(state_char, "State: WAIT   \0", 15);
 			break;
 		case STATE_RUNNING:
-			state_char = "State: RUNNING";
+            strncpy(state_char, "State: RUNNING\0", 15);
+			
 			break;
 		case STATE_FINDING_ROAD:
-			state_char = "State: FINDING_ROAD";
+            strncpy(state_char, "State: FINDING_ROAD\0", 20);
+			
 			break;
 		case STATE_ROAD_NOT_FOUND:
-			state_char = "State:ROAD_NOT_FOUND";
+            strncpy(state_char, "State:ROAD_NOT_FOUND\0", 21);
+			
 			break;
         default:
-			state_char = "Unknown State!";
+            strncpy(state_char, "Unknown State!\0", 15);
 	}
+
 	LCD_Write_String(state_char,ROW_1);
 
 }
 
-void LCD_error(char* error)
+void LCD_error(char error)
 {
+	char err[14];
+	if (error == GOAL_POINT)
+	{
+		strncpy(err, "GOAL POINT\0", 10);
+	}
+	else if (error == CONTROL_NO_REF_POINT)
+	{
+		strncpy(err,"NO REF POINT\0", 12);
+	}
+	else
+	{
+		itoa((int)error, err, 10);
+	}
 	char str[25] = "Error: ";
-	strcat(str,error);
+	strncat(str,&err,strlen(err));
 	LCD_Write_String(str,ROW_2);
 }
 
@@ -135,6 +152,14 @@ void LCD_speed(char* speed)
 	char str[25] = "Speed: ";
 	strcat(str,speed);
 	LCD_Write_String(str,ROW_3);
+}
+
+void LCD_Write_int(int num, int row)
+{
+	char temp[10];
+	itoa(num, temp,10);
+
+	LCD_Write_String(temp,row);
 }
 
 void LCD_clear(void)

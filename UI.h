@@ -14,7 +14,7 @@ void USART_LCD_Init(unsigned int ubrr);
 
 void LCD_Write_String(char* str, uint8_t row);
 void LCD_state(uint8_t state);
-void LCD_error(char* error);
+void LCD_error(char error);
 void LCD_speed(char* speed);
 void LCD_clear(void);
 
