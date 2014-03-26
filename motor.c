@@ -8,7 +8,8 @@ extern int gCurrentRPM;
 void motor_init(void)
 {
     DDRH |= (1 << MOTOR_PIN_PWM);
-    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41);
+    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41) | (1 << WGM40); // Fast PWM
+    TCCR4B |= (1 << CS40); //
     OCR4A = 0; //set motor speed to zero
     DDRK |= (1 << MOTOR_PIN_INA) | (1 << MOTOR_PIN_INB); //INA and INB
     DDRK &= ~((1 << MOTOR_PIN_ENA) | (1 << MOTOR_PIN_ENB)) // ENA & ENB = 0
@@ -38,12 +39,12 @@ void writeMotorPWM(int pwm)
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
-	LCD_clear();	
+	LCD_clear();
 	char bfr[5];
 	itoa(lastPWM, bfr, 10);
 
 	LCD_Write_String(bfr, 1);
-    
+
     if(lastPWM != pwm){
         if(pwm == 0)
         {
