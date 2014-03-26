@@ -81,6 +81,33 @@ void USART_LCD_Init(unsigned int ubrr){
 	while (RECEIVED != USART_Receive());
 }
 
+void LCD_ClearRow(uint8_t row)
+{
+    char emptyLine[] = "                    ";
+    LCD_Write_String(emptyLine, row);
+}
+
+#define LCD_INFO_MAX_LENGTH 20
+void LCD_Write_Info(char* prefix, int value, uint8_t row)
+{
+    // cut string from 16 chars //
+
+    if (strlen(prefix ) > 16)
+        prefix[16] = '\0';
+
+    char buffer[LCD_INFO_MAX_LENGTH];
+    char intValue[6];
+    itoa(value, intValue, 10);
+
+    strncpy(buffer, prefix, strlen(prefix));
+    strncat(buffer, intValue, strlen(intValue));
+    while(strlen(buffer) < LCD_INFO_MAX_LENGTH)
+        strncat(buffer, " ", 1);
+
+    LCD_Write_String(buffer, row);
+
+}
+
 void LCD_Write_String(char* str, uint8_t row)
 {
 	USART_Transmit(DRAW_STRING);
@@ -109,15 +136,15 @@ void LCD_state(uint8_t gState)
 			break;
 		case STATE_RUNNING:
             strncpy(state_char, "State: RUNNING\0", 15);
-			
+
 			break;
 		case STATE_FINDING_ROAD:
             strncpy(state_char, "State: FINDING_ROAD\0", 20);
-			
+
 			break;
 		case STATE_ROAD_NOT_FOUND:
             strncpy(state_char, "State:ROAD_NOT_FOUND\0", 21);
-			
+
 			break;
         default:
             strncpy(state_char, "Unknown State!\0", 15);
@@ -143,7 +170,7 @@ void LCD_error(char error)
 		itoa((int)error, err, 10);
 	}
 	char str[25] = "Error: ";
-	strncat(str,&err,strlen(err));
+	strncat(str, err,strlen(err));
 	LCD_Write_String(str,ROW_2);
 }
 
@@ -151,10 +178,10 @@ void LCD_speed(char* speed)
 {
 	char str[25] = "Speed: ";
 	strcat(str,speed);
-	LCD_Write_String(str,ROW_3);
+	LCD_Write_String(str, ROW_3);
 }
 
-void LCD_Write_int(int num, int row)
+void LCD_Write_int(int num, uint8_t row)
 {
 	char temp[10];
 	itoa(num, temp,10);
