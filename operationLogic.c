@@ -4,7 +4,7 @@
 extern volatile uint8_t gState;
 extern uint8_t gLapCount;
 extern char gLastError;
-
+extern uint8_t gBumperValue;
 extern bool gFindRoadTimerElapsed;
 
 /* Internal global variables */
@@ -90,9 +90,69 @@ void setState(char error)
 	}
 }
 
+bool isValidBumperValue(uint8_t bumperVal)
+{
+    // Accepter number of hits: >= 6 or <=2
+    unsigned int counter = 0;
+    uint8_t itr = 0x01;
+    while (itr <= 0x80)
+    {
+        if (itr & bumperVal)
+            counter++;
+        itr = (itr << 1);
+    }
+
+    return (counter >= 6 || conter <= 2);
+}
+void calcBumperValue(void)
+{
+    static uint8_t bumperBuffer[BUMPER_READ_BUFF_SIZE];
+    static unsigned int buffCursor = 0;
+    static bool initBuffer = true;
+    static unsigned int valCounter  = 0;
+
+    uint8_t bumperVal;
+    if (initBuffer)
+    {
+        initBuffer = false;
+        for (int i = 0; i < BUMPER_READ_BUFF_SIZE; i++)
+            bumperBuffer[i] = 0;
+    }
+
+    bumperVal = BUMPER_REGISTER;
+    if (isValidBumperValue(bumperVal))
+    {
+        bumperBuffer[buffCusor++] = bumperVal;
+        valCounter++;
+    }
+    if (buffCursor >= BUMPER_READ_BUFF_SIZE)
+        buffCursor = 0;
+
+    if (valCounter >= BUMPER_READ_BUFF_SIZE)
+    {
+        valCounter = 0;
+        // Calculate single "average" value from buffer //
+        uint8_t bumber_buffer[BUMPER_READ_BUFF_SIZE];
+        uint8_t filteredValue = 0;
+        uint8_t filter_values[] = {0,0,0,0,0,0,0,0};
+        for(uint8_t j = 0; j < BUMPER_READ_BUFF_SIZE;j++)
+        {
+            for(uint8_t i = 0; i < sizeof(uint8_t); i++)
+                filter_values[i] += val[j] & (1<<i);
+        }
+
+        for(uint8_t i = 0;i < 8;i++)
+        {
+            if(filter_values[i] > BUMPER_READ_BUFF_SIZE/2)
+                filteredValue |= (1<<i);
+        }
+        gBumperValue = filteredValue;
+    }
+}
+
 inline uint8_t readBumper(void)
 {
-    return BUMPER_REGISTER; //read sensor port data
+    return gBumperValue; //read sensor port data
 }
 
 char calcMotorSpeed(char error)

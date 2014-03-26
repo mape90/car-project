@@ -14,6 +14,7 @@
 #define I                               0
 #define D                               0
 
+#define BUMPER_READ_BUFF_SIZE           16
 #define MOTOR_SPEED_MAX_RPM             1000
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
 
@@ -93,17 +94,5 @@
 /* Error codes */
 #define ERR_SERVO_UNDER_MIN_CONTROL     10
 #define ERR_SERVO_OVER_MAX_CONTROL      11
-
-uint8_t bumber_buffer[BUMPER_BUFFER_SIZE];
-
-uint8_t filter_values[] = {0,0,0,0,0,0,0,0};
-for(uint8_t j = 0; j < BUMPER_BUFFER_SIZE;j++)
-    for(uint8_t i = 0;i < 8;i++)
-        filter_values[] += val[j] & (1<<i);
-
-filtered = 0;
-for(uint8_t i = 0;i < 8;i++)
-    if(filter_values[i] > BUMPER_BUFFER_SIZE/2)
-        filtered |= (1<<i;
 
 #endif
