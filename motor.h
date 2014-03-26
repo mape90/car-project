@@ -3,6 +3,7 @@
 
 #include "includes.h"
 
+void motor_init(void);
 void setMotorSpeed(int rpm);
 char calcMotorSpeed(char error);
 int tachometer2rpm(uint16_t, uint8_t);

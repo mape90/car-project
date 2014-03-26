@@ -72,11 +72,7 @@ void setup(void) {
     //init timer 1 (Servo)
     servo_init();
     //init timer 4 (Motor)
-    DDRH |= (1 << 3);
-    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41);
-    OCR4A = 0; //set motor speed to zero
-    DDRK |= _BV(0) | _BV(1); //INA and INB
-    PORTK = 0x00;
+    motor_init();
 
     //init timer 5 (Tachometer)
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering

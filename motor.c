@@ -5,6 +5,15 @@
 extern uint16_t gTachometerValue;
 extern int gCurrentRPM;
 
+void motor_init(void)
+{
+    DDRH |= (1 << MOTOR_PIN_PWM);
+    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41);
+    OCR4A = 0; //set motor speed to zero
+    DDRK |= (1 << MOTOR_PIN_INA) | (1 << MOTOR_PIN_INB); //INA and INB
+    DDRK &= ~((1 << MOTOR_PIN_ENA) | (1 << MOTOR_PIN_ENB)) // ENA & ENB = 0
+    PORTK = 0x00;
+}
 
 void setMotorSpeed(int rpm)
 {
@@ -32,14 +41,16 @@ void writeMotorPWM(int pwm)
     if(lastPWM != pwm){
         if(pwm == 0)
         {
-            PORTK = 0x00;       //break
+            PORTK &= 0xfc;      //break: 00
             OCR4A = 0;          //set pwm sycle to zero
         }else if(pwm > 0)
         {
-            PORTK = 0x02;       //Clockwise
+            PORTK &= 0xfc;       //Clockwise, clear bits
+            PORTK |= (MOTOR_PIN_INA);
             OCR4A = pwm;
         }else{
-            PORTK = 0x01;       //Counter-clockwise (CCW)
+            PORTK &= 0xfc;       //Counter-clockwise (CCW)
+            PORTK |= (MOTOR_PIN_INB);
             OCR4A = abs(pwm);   //set pwm walue positive
         }
         lastPWM = pwm;
