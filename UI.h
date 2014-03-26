@@ -19,9 +19,10 @@ void LCD_speed(char* speed);
 void LCD_clear(void);
 
 void LCD_Write(void);
+void LCD_Write_int(int num, uint8_t row);
 void LCD_ClearErrorFlags(void);
 void LCD_WriteErrorFlags(uint8_t errNo);
 void LCD_setTimer(void);
-
+void LCD_Write_Info(char* prefix, int value, uint8_t row);
 
 #endif
