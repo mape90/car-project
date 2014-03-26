@@ -78,8 +78,7 @@ void USART_LCD_Init(unsigned int ubrr){
 	// LCD init
 	_delay_ms(510);
 	USART_Transmit(AUTO_BAUD);
-	unsigned char data_rec = RECEIVED;
-	while (data_rec != USART_Receive());
+	while (RECEIVED != USART_Receive());
 }
 
 void LCD_Write_String(char* str, uint8_t row)
