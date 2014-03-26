@@ -13,8 +13,8 @@ static int gIntegerSum = 0;
 
 void runCar(void)
 {
-    uint8_t angle;
-    char speed, error = calcError(readBumper());
+    int angle, speed;
+    char error = calcError(readBumper());
     setState(error);
     calcControl(error, &speed, &angle);
     executeControl(speed, angle);
@@ -25,12 +25,6 @@ void stopCar(void)
 {
     executeControl(0, 0);
 }
-
-void findRoad(void)
-{
-    executeControl(ROAD_FIND_SPEED_RPM, 0); //TODO make more intelligent
-}
-
 
 void setNewState(uint8_t newState)
 {
@@ -55,7 +49,7 @@ void setFindTimer()
 
 void setState(char error)
 {
-	if(error == GOAL_POINT)
+	if(errorerror == GOAL_POINT)
 	{
 		if(error != gLastError)
 		{
@@ -158,27 +152,26 @@ inline uint8_t readBumper(void)
     return gBumperValue; //read sensor port data
 }
 
-char calcMotorSpeed(char error)
+int calcMotorSpeed(char error)
 {
     if (error > -8 && error < 8)
         return MOTOR_SPEED_MAX_RPM - abs(error)*MOTOR_SPEED_REDUCE;
-
     else
         return 0;
 }
 
-void calcControl(uint8_t error, char* speed, uint8_t* angle)
+void calcControl(uint8_t error, int* speed, int* angle)
 {
 	if(error == CONTROL_NO_REF_POINT)
 	{
-		//do what is needed to do when track is lost
-        *angle = PID(0);
-        *speed = calcMotorSpeed(MOTOR_NO_REF_SPEED);//TODO
+		//turn same direction where last time turned
+        *angle = PID((getServoAngle() < 0) ? 7: -7);
+        *speed = calcMotorSpeed((getServoAngle() < 0) ? 7: -7);//TODO check!!
 	}
 	else if(error == GOAL_POINT)
 	{
         *angle = PID(0);
-        *speed = calcMotorSpeed(0);
+        *speed = calcMotorSpeed(0);//TODO: should this be max speed?
     }
     else
     {
@@ -194,36 +187,26 @@ char calcError(uint8_t sensorValues)
 	char mostLeft = -1;
 	char mostRight = -1;
 
-
-	for(uint8_t i = 0;i < 8;i++)
-	{
-        //LCD_clear();
-        //_delay_ms(400);
-		//LCD_Write_int(i);
-		if(sensorValues & (0x80 >> i))
-		{
+	for(uint8_t i = 0;i < 8;i++){
+		if(sensorValues & (0x80 >> i)){
 			mostLeft = i;
-
 			break;
 		}
 	}
-	for(uint8_t i = 0;i < 8;i++)
-	{
-		if(sensorValues & (0x01 << i))
-		{
+	for(uint8_t i = 0;i < 8;i++){
+		if(sensorValues & (0x01 << i)){
 			mostRight = i;
 			break;
 		}
 	}
-	if(mostLeft < 0 || mostRight < 0)
-	{//no reference point found out of track
+
+	if(mostLeft < 0 || mostRight < 0){//no reference point found out of track
         if(lastError < 7){
             error = lastError + ((lastError < 0) ? 1: -1);
         }else{
             error = CONTROL_NO_REF_POINT;
         }
-	}else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH)
-	{
+	}else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
         error = GOAL_POINT;
     }else{
         error = 7-2*mostRight;
@@ -232,7 +215,7 @@ char calcError(uint8_t sensorValues)
 	return error;
 }
 
-void executeControl(int speed, uint8_t angle)
+void executeControl(int speed, int angle)
 {
     writeServoControl(angle);//Servo
     setMotorSpeed(speed);//motor

@@ -10,12 +10,11 @@
 void runCar(void);
 void stopCar(void);
 void findRoad(void);
-
-void calcControl(uint8_t error, char* speed, uint8_t* angle);
-char calcMotorSpeed(char);
+void calcControl(uint8_t error, int* speed, int* angle);
+int calcMotorSpeed(char);
 char calcError(uint8_t sensor_values);
 
-void executeControl(int speed, uint8_t angle);
+void executeControl(int speed, int angle);
 int  PID(char);
 uint8_t readBumper(void);
 

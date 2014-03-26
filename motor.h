@@ -5,7 +5,7 @@
 
 void motor_init(void);
 void setMotorSpeed(int rpm);
-char calcMotorSpeed(char error);
+int calcMotorSpeed(char error);
 int tachometer2rpm(uint16_t, uint8_t);
 int motorPI(int);
 uint16_t readTachometer(void);
