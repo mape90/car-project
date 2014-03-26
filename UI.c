@@ -102,6 +102,19 @@ void LCD_Write_Info(char* prefix, int value, uint8_t row)
     LCD_Write_String(buffer, row, 0);
 }
 
+void LCD_Write_PID(pidData_t *pid, uint8_t row)
+{
+    LCD_Write_String("PID: ", row, 0);
+    LCD_Write_int(pid->P_Factor, row, 5);
+    LCD_Write_String(", ", row, 9);
+    LCD_Write_int(pid->I_Factor, row, 11);
+    LCD_Write_String(", ", row, 16);
+    LCD_Write_int(pid->D_Factor, row, 18);
+    LCD_Write_String("SumErr: ", row+1, 0);
+    LCD_Write_int(pid->sumError, row+1, 8);
+
+}
+
 void LCD_Write_String(char* str, uint8_t row, uint8_t col)
 {
 	USART_Transmit(DRAW_STRING);
@@ -199,6 +212,6 @@ inline void LCD_WriteErrorFlags(uint8_t errNo)
 }
 
 inline void LCD_setTimer(void)
-{   
+{
     timer_enable(TIMER_2, LCD_REFRESH_RATE_MS);
 }
