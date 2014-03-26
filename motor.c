@@ -8,12 +8,13 @@ extern int gCurrentRPM;
 void motor_init(void)
 {
     DDRH |= (1 << MOTOR_PIN_PWM);
-    TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41) | (1 << WGM40); // Fast PWM
+    TCCR4A = (1 << COM4A0) |(1 << COM4A1) | (1 << WGM42) | (1 << WGM41) | (1 << WGM43); // Fast PWM
     TCCR4B |= (1 << CS40); //
+    ICR4 = 0xffff;
     OCR4A = 0; //set motor speed to zero
     DDRK |= (1 << MOTOR_PIN_INA) | (1 << MOTOR_PIN_INB); //INA and INB
-    DDRK &= ~((1 << MOTOR_PIN_ENA) | (1 << MOTOR_PIN_ENB)) // ENA & ENB = 0
-    PORTK = 0x00;
+    DDRK &= ~((1 << MOTOR_PIN_ENA) | (1 << MOTOR_PIN_ENB)); // ENA & ENB = 0
+    //PORTK = 0x00;
 }
 
 void setMotorSpeed(int rpm)
@@ -39,11 +40,11 @@ void writeMotorPWM(int pwm)
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
-	LCD_clear();
+	/*LCD_clear();
 	char bfr[5];
-	itoa(lastPWM, bfr, 10);
+	itoa(pwm, bfr, 10);
 
-	LCD_Write_String(bfr, 1);
+	LCD_Write_String(bfr, 1);*/
 
     if(lastPWM != pwm){
         if(pwm == 0)
@@ -53,11 +54,11 @@ void writeMotorPWM(int pwm)
         }else if(pwm > 0)
         {
             PORTK &= 0xfc;       //Clockwise, clear bits
-            PORTK |= (MOTOR_PIN_INA);
+            PORTK |= (1 << MOTOR_PIN_INA);
             OCR4A = pwm;
         }else{
             PORTK &= 0xfc;       //Counter-clockwise (CCW)
-            PORTK |= (MOTOR_PIN_INB);
+            PORTK |= (1 << MOTOR_PIN_INB);
             OCR4A = abs(pwm);   //set pwm walue positive
         }
         lastPWM = pwm;

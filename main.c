@@ -53,12 +53,15 @@ ISR(INT5_vect){
 
 int main(void){
     setup();
+
+	//OCR4A = 30000;
     while(1){
+	writeMotorPWM(1000);
         //test_servo_loop();
-        test_motor_loop();
+        //test_motor_loop();
         //test_controll_loop();
 		//loop();
-		synchronizeLoopSpeed();
+		//synchronizeLoopSpeed();
     }
     return 0;
 }
@@ -79,7 +82,7 @@ void setup(void) {
     TCNT5 = 0;
 
     writeServoControl(0);
-    USART_LCD_Init(MYUBRR);
+    //USART_LCD_Init(MYUBRR);
     sei();
 
 }

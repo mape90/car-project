@@ -33,7 +33,7 @@ void writeServoControl(int deg){
             deg = SERVO_VALUE_MAX;
             //reportError(ERR_SERVO_OVER_MAX_CONTROL);
         }
-        TCNT1 = 0;
+        //TCNT1 = 0;
         OCR1A = SERVO_PULSE_MIN + ((int)deg + 90) * SERVO_PULSE_WIDTH;
         gWheelOrientation = deg;
     }

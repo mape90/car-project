@@ -4,7 +4,8 @@ extern char gLastError;
 
 void test_motor_loop()
 { //dummy test
-    setMotorSpeed(300);
+    //setMotorSpeed(300);
+	writeMotorPWM(5000);
 }
 
 void test_controll_loop()
@@ -20,16 +21,16 @@ void test_controll_loop()
 
 void test_servo_loop()
 { //dummy test
-    for(int i = 0;i<=90;i++){
+    for(int i = 0;i<=45;i=i+1){
         writeServoControl(i);
-        _delay_ms(30);
+        _delay_ms(3);
     }
-    for(int i = 90;i>=-90;i--){
+    for(int i = 45;i>=-45;i=i-1){
         writeServoControl(i);
-        _delay_ms(30);
+        _delay_ms(3);
     }
-    for(int i = -90;i<=0;i++){
+    for(int i = -45;i<=0;i=i+1){
         writeServoControl(i);
-        _delay_ms(30);
+        _delay_ms(3);
     }
 }
