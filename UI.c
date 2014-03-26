@@ -96,16 +96,13 @@ void LCD_Write_Info(char* prefix, int value, uint8_t row)
         prefix[16] = '\0';
 
     char buffer[LCD_INFO_MAX_LENGTH];
-    char intValue[6];
+    char intValue[8];
     itoa(value, intValue, 10);
 
     strncpy(buffer, prefix, strlen(prefix));
     strncat(buffer, intValue, strlen(intValue));
-    while(strlen(buffer) < LCD_INFO_MAX_LENGTH)
-        strncat(buffer, " ", 1);
 
     LCD_Write_String(buffer, row);
-
 }
 
 void LCD_Write_String(char* str, uint8_t row)
