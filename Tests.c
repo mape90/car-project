@@ -11,19 +11,19 @@ void test_motor_loop()
 void test_tachometer_loop(){
     writeMotorPWM(5000);
     LCD_clear();
-    LCD_Write_int((int)readTachometer());
+    LCD_Write_int((int)readTachometer(),9);
 }
 
 void test_tachometer_rpm_loop(){
     writeMotorPWM(5000);
     LCD_clear();
-    LCD_Write_int(tachometer2rpm(readTachometer()));
+    LCD_Write_int(tachometer2rpm(readTachometer(),1),10);
 }
 
 void test_tachometer_PI_loop(){
     writeMotorPWM(5000);
     LCD_clear();
-    LCD_Write_int(motorPI(tachometer2rpm(readTachometer()) -1000 ));
+    LCD_Write_int(motorPI(tachometer2rpm(readTachometer(),1)-1500), 10);
 }
 
 
