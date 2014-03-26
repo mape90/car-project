@@ -194,13 +194,13 @@ char calcError(uint8_t sensorValues)
 
 	for(uint8_t i = 0;i < 8;i++)
 	{
-        LCD_clear();
-        _delay_ms(400);
-		LCD_Write_int(i);	
+        //LCD_clear();
+        //_delay_ms(400);
+		//LCD_Write_int(i);
 		if(sensorValues & (0x80 >> i))
 		{
 			mostLeft = i;
-            
+
 			break;
 		}
 	}
