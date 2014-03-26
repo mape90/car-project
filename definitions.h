@@ -56,8 +56,8 @@
 #define CONTROL_VALUE_MAX               255
 #define INTEGER_MAX                     200
 
-#define SERVO_VALUE_MAX                 ((char)90)
-#define SERVO_VALUE_MIN                 ((char)-90)
+#define SERVO_VALUE_MAX                 ((char)45)
+#define SERVO_VALUE_MIN                 ((char)-45)
 #define SERVO_PULSE_MIN                 ((uint16_t)2000)
 #define SERVO_PULSE_WIDTH               11
 
