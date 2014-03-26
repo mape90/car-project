@@ -4,7 +4,7 @@
 TARGET := main
 
 # List of source files to be build (seperated by space)
-SRC := main.c
+SRC := main.c eventTimer.c motor.c operationLogic.c servo.c Tests.c UI.c
 
 # On this course we will use arduino mega boards, so there is no need to change this
 #BOARD := arduino_mega
@@ -20,7 +20,9 @@ BOARD := arduino_mega2560
 #     `make program PORT=/dev/ttyACM0`
  # PORT := /dev/ttyACM0
 
-PORT := /dev/ttyUSB0
+PORT := /dev/ttyACM0
+
+
 
 # List macro defines here (-D for gcc)
 #DEFS += -DFOOBAR="foo bar"
