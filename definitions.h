@@ -28,7 +28,7 @@
 
 /* Port / pin -settings */
 #define BUMPER_REGISTER                 PINA       // Todo: set this to actual reg.
-#define SERVO_PIN                       3
+#define SERVO_PIN                       PB5
 #define MOTOR_PIN_1                     PK0       // Todo: set this to actual pin.
 #define MOTOR_PIN_2                     PK1       // Todo: set this to actual pin.
 
