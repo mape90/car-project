@@ -5,6 +5,6 @@
 
 void servo_init(void);
 char getServoAngle(void);
-void writeServoControl(char);
+void writeServoControl(int);
 
 #endif

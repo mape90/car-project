@@ -22,14 +22,14 @@ void test_servo_loop()
 { //dummy test
     for(int i = 0;i<=90;i++){
         writeServoControl(i);
-        _delay_ms(10);
+        _delay_ms(30);
     }
     for(int i = 90;i>=-90;i--){
         writeServoControl(i);
-        _delay_ms(10);
+        _delay_ms(30);
     }
     for(int i = -90;i<=0;i++){
         writeServoControl(i);
-        _delay_ms(10);
+        _delay_ms(30);
     }
 }

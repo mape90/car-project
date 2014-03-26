@@ -20,6 +20,7 @@ inline int getMotorRPM(void)
 
 void writeMotorPWM(int pwm)
 {
+	static int lastPWM = 0;
     //limit control values
     if(abs(pwm) > MOTOR_CONTROL_MAX){
         pwm = (pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX;
@@ -28,7 +29,12 @@ void writeMotorPWM(int pwm)
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
-    static int lastPWM = 0;
+	LCD_clear();	
+	char bfr[5];
+	itoa(lastPWM, bfr, 10);
+
+	LCD_Write_String(bfr, 1);
+    
     if(lastPWM != pwm){
         if(pwm == 0)
         {
