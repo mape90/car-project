@@ -52,17 +52,19 @@ ISR(INT5_vect){
 
 //-----------------------------------//
 
-int main(void){
+int main(void)
+{
     setup();
 
 	//OCR4A = 30000;
-    while(1){
-	writeMotorPWM(1000);
+    while(1)
+    {
+        //writeMotorPWM(1000);
         //test_servo_loop();
         //test_motor_loop();
-        //test_controll_loop();
+        test_controll_loop();
 		//loop();
-		//synchronizeLoopSpeed();
+        synchronizeLoopSpeed();
     }
     return 0;
 }
@@ -102,7 +104,10 @@ void loop(void){
 
 void synchronizeLoopSpeed(void)
 {
-	while(gLoopTimeNotElapsed);
+	while(gLoopTimeNotElapsed)
+	{
+        calcBumperValue();
+	}
 
 	gLoopTimeNotElapsed = true;
 	timer_enable(TIMER_1, LOOP_TIME_MS);
