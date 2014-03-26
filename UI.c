@@ -81,6 +81,11 @@ void USART_LCD_Init(unsigned int ubrr){
 	while (RECEIVED != USART_Receive());
 }
 
+void LCD_ClearRow(uint8_t row)
+{
+    char emptyLine[] = "                    ";
+    LCD_Write_String(emptyLine, row);
+}
 
 #define LCD_INFO_MAX_LENGTH 20
 void LCD_Write_Info(char* prefix, int value, uint8_t row)

@@ -17,6 +17,7 @@ void LCD_state(uint8_t state);
 void LCD_error(char error);
 void LCD_speed(char* speed);
 void LCD_clear(void);
+void LCD_ClearRow(uint8_t row);
 
 void LCD_Write(void);
 void LCD_Write_int(int num, uint8_t row);
