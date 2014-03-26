@@ -13,24 +13,23 @@ void setMotorSpeed(int rpm)
     writeMotorPWM(motorPI(rpm - gCurrentRPM));
 }
 
-int getMotorRPM(void)
+inline int getMotorRPM(void)
 {
     return gCurrentRPM;
 }
 
 void writeMotorPWM(int pwm)
 {
+    //limit control values
+    if(abs(pwm) > MOTOR_CONTROL_MAX){
+        pwm = (pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX;
+    }
+    //limit acceleration
+    if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
+        pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
+    }
     static int lastPWM = 0;
     if(lastPWM != pwm){
-        //limit control values
-        if(abs(pwm) > MOTOR_CONTROL_MAX){
-            pwm = (pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX;
-        }
-        //limit acceleration
-        if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
-            pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
-        }
-
         if(pwm == 0)
         {
             PORTK = 0x00;       //break
@@ -78,7 +77,7 @@ uint16_t readTachometer(void)
     static uint8_t tachoBufferCursor = 0;
     static uint8_t buffer[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 	buffer[tachoBufferCursor] = TCNT5;
-    tachoBufferCursor = (tachoBufferCursor + 1)%10;
+    tachoBufferCursor = (tachoBufferCursor + 1) % 10;
 	TCNT5 = 0;
     uint16_t temp = 0;
     for(uint8_t i = 0; i < 10; i++){

@@ -3,7 +3,7 @@
 
 /* Settings */
 
-#define LCD_REFRESH_RATE_MS              500
+#define LCD_REFRESH_RATE_MS             500
 #define TICKS_PER_ROTATION              2
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1

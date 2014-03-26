@@ -23,15 +23,11 @@ uint8_t gLCDErrorFlags = 0;
 /* ISR's */
 ISR(TIMER0_OVF_vect)
 {
-    for(uint8_t i = 0;i < TIMER_MAX_COUNT;i++)
-    {
-        if(timer_enabled(i))
-        {
-            if(timer_ended(i))
-            {
+    for(uint8_t i = 0;i < TIMER_MAX_COUNT;i++){
+        if(timer_enabled(i)){
+            if(timer_ended(i)){
                 timer_disable(i);
-                switch(i)
-                {
+                switch(i){
                     case TIMER_1:
                         disable_wait();
                         break;
@@ -42,8 +38,7 @@ ISR(TIMER0_OVF_vect)
                         changeToRoadNotFoundState();
                         break;
                 }
-            }else
-            {
+            }else{
                 timer_update(i);
             }
         }
