@@ -121,12 +121,12 @@ void calcBumperValue(void)
 
     bumperVal = ~BUMPER_REGISTER;
     LCD_Write_int((int)bumperVal, 7);
-    
+
     //if (isValidBumperValue(bumperVal))
-    {
-        bumperBuffer[buffCursor++] = bumperVal;
-        valCounter++;
-    }
+
+    bumperBuffer[buffCursor++] = bumperVal;
+    valCounter++;
+
     if (buffCursor >= BUMPER_READ_BUFF_SIZE)
         buffCursor = 0;
 
@@ -134,19 +134,20 @@ void calcBumperValue(void)
     {
         valCounter = 0;
         // Calculate single "average" value from buffer //
-    
+
         uint8_t filteredValue = 0;
         uint8_t filter_values[] = {0,0,0,0,0,0,0,0};
         for(uint8_t j = 0; j < BUMPER_READ_BUFF_SIZE;j++)
         {
             for(uint8_t i = 0; i < 8; i++)
-                filter_values[i] += (bumperBuffer[j] & (1<<i));
+                filter_values[i] += ((bumperBuffer[j] & (1<<i)) ? 1: 0);
         }
 
         for(uint8_t i = 0;i < 8;i++)
         {
-            if(filter_values[i] > (BUMPER_READ_BUFF_SIZE/2))
+            if(filter_values[i] > (BUMPER_READ_BUFF_SIZE/2)){
                 filteredValue |= (1<<i);
+            }
         }
         gBumperValue = filteredValue;
     }
