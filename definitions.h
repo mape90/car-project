@@ -14,6 +14,7 @@
 #define I                               0
 #define D                               0
 
+#define BUMPER_READ_BUFF_SIZE           16
 #define MOTOR_SPEED_MAX_RPM             1000
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
 
@@ -93,6 +94,5 @@
 /* Error codes */
 #define ERR_SERVO_UNDER_MIN_CONTROL     10
 #define ERR_SERVO_OVER_MAX_CONTROL      11
-
 
 #endif

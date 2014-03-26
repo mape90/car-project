@@ -22,4 +22,6 @@ uint8_t readBumper(void);
 void setNewState(uint8_t newState);
 void setState(char error);
 void setFindTimer(void);
+void calcBumperValue(void);
+bool isValidBumperValue(uint8_t bumperVal);
 #endif
