@@ -68,11 +68,9 @@ void setup(void) {
     //init timer 0 (Events)
     initEventTimer();
 
-    //init timer 1 (Servo)
-    ICR1 = 40000;
-    TCCR1A |= (1<<WGM11) | (1<<COM1A1);
-    TCCR1B |= (1<<WGM13) | (1<<WGM12) | (1<<CS11);
 
+    //init timer 1 (Servo)
+    servo_init();
     //init timer 4 (Motor)
     DDRH |= (1 << 3);
     TCCR4A = (1 << COM4A1) | (1 << COM4B1) | (1 << WGM42) | (1 << WGM41);
@@ -87,7 +85,7 @@ void setup(void) {
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);
     sei();
-    
+
 }
 
 void loop(void){
