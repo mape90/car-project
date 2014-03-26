@@ -49,7 +49,7 @@ void setFindTimer()
 
 void setState(char error)
 {
-	if(errorerror == GOAL_POINT)
+	if(error == GOAL_POINT)
 	{
 		if(error != gLastError)
 		{
@@ -182,37 +182,37 @@ void calcControl(uint8_t error, int* speed, int* angle)
 
 char calcError(uint8_t sensorValues)
 {
-	static char lastError = 0;
-	char error = 0;
-	char mostLeft = -1;
-	char mostRight = -1;
+    static char lastError = 0;
+    char error = 0;
+    char mostLeft = -1;
+    char mostRight = -1;
 
-	for(uint8_t i = 0;i < 8;i++){
-		if(sensorValues & (0x80 >> i)){
-			mostLeft = i;
-			break;
-		}
-	}
-	for(uint8_t i = 0;i < 8;i++){
-		if(sensorValues & (0x01 << i)){
-			mostRight = i;
-			break;
-		}
-	}
+    for(uint8_t i = 0;i < 8;i++){
+	    if(sensorValues & (0x80 >> i)){
+		    mostLeft = i;
+		    break;
+	    }
+    }
+    for(uint8_t i = 0;i < 8;i++){
+	    if(sensorValues & (0x01 << i)){
+		    mostRight = i;
+		    break;
+	    }
+    }
 
-	if(mostLeft < 0 || mostRight < 0){//no reference point found out of track
-        if(lastError < 7){
-            error = lastError + ((lastError < 0) ? 1: -1);
-        }else{
-            error = CONTROL_NO_REF_POINT;
-        }
-	}else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
-        error = GOAL_POINT;
+    if(mostLeft < 0 || mostRight < 0){//no reference point found out of track
+    if(lastError < 7){
+	error = lastError + ((lastError < 0) ? 1: -1);
+    }else{
+	error = CONTROL_NO_REF_POINT;
+    }
+    }else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
+    error = GOAL_POINT;
     }else{
         error = 7-2*mostRight;
         lastError = error;
     }
-	return error;
+    return error;
 }
 
 void executeControl(int speed, int angle)
@@ -233,10 +233,10 @@ int PID(char error)
 
     control += D * (error - gLastError) + gIntegerSum;
 
-    if(abs(control) > CONTROL_VALUE_MAX)
+    if(abs(control) > SERVO_CONTROL_VALUE_MAX)
     {//limit control values
-        control = (control < 0) ? -1*CONTROL_VALUE_MAX : CONTROL_VALUE_MAX;
+        control = (control < 0) ? -1*SERVO_CONTROL_VALUE_MAX : SERVO_CONTROL_VALUE_MAX;
     }
 
-    return control;
+    return l;
 }
