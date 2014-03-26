@@ -90,7 +90,9 @@ void setup(void) {
     TCNT5 = 0;
 
     writeServoControl(0);
+    USART_LCD_Init(MYUBRR);
     sei();
+    
 }
 
 void loop(void){
