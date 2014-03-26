@@ -11,21 +11,24 @@
 #define GOAL_MIN_WIDTH                  2
 #define GOAL_POINT                      100
 #define P                               5
-#define I                               0
+#define I                               1
 #define D                               0
 
 #define BUMPER_READ_BUFF_SIZE           16
+#define TACHOMETER_BUFFER_SIZE          4
 #define MOTOR_SPEED_MAX_RPM             1000
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
 
 #define MOTOR_SPEED_REDUCE              MOTOR_SPEED_MAX_RPM/9
 
+#define MOTOR_SCALE_RPM                 10
+
 #define MOTOR_CONTROL_MAX               (65536/3)
 #define MOTOR_ACC_MAX                   1000
 #define MOTOR_I_VALUE_MAX               MOTOR_CONTROL_MAX
 
-#define MOTOR_P                         ((uint8_t)1)
-#define MOTOR_I                         ((uint8_t)0)
+#define MOTOR_P                         ((uint8_t)30)
+#define MOTOR_I                         ((uint8_t)1)
 
 /* Port / pin -settings */
 #define BUMPER_REGISTER                 PINA       // Todo: set this to actual reg.

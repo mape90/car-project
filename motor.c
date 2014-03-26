@@ -67,7 +67,7 @@ void writeMotorPWM(int pwm)
 
 //val tacho values from last 10 readings ~1sec
 int tachometer2rpm(uint16_t val, uint8_t dir){
-    val = val * 1000/LOOP_TIME_MS/10*60/TICKS_PER_ROTATION;  // 100ms 2 tic per rotation. 1 tic -> 10 tic per sec 5 rotation per sec 300rpm
+    val = val * 1000/LOOP_TIME_MS/TACHOMETER_BUFFER_SIZE*60/TICKS_PER_ROTATION;  // 100ms 2 tic per rotation. 1 tic -> 10 tic per sec 5 rotation per sec 300rpm
     if(dir == MOTOR_FORWARD){
         return (int)val;
     }else{
@@ -76,7 +76,7 @@ int tachometer2rpm(uint16_t val, uint8_t dir){
 }
 
 int motorPI(int error_in_speed){
-	int control = MOTOR_P * error_in_speed;
+	int control = MOTOR_P * error_in_speed/MOTOR_SCALE_RPM;
 	static int motor_I_sum = 0;
 
     motor_I_sum += MOTOR_I * error_in_speed;
@@ -94,12 +94,13 @@ int motorPI(int error_in_speed){
 uint16_t readTachometer(void)
 {
     static uint8_t tachoBufferCursor = 0;
-    static uint8_t buffer[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    static uint8_t buffer[TACHOMETER_BUFFER_SIZE] = {0};
+
 	buffer[tachoBufferCursor] = TCNT5;
-    tachoBufferCursor = (tachoBufferCursor + 1) % 10;
+    tachoBufferCursor = (tachoBufferCursor + 1) % TACHOMETER_BUFFER_SIZE;
 	TCNT5 = 0;
     uint16_t temp = 0;
-    for(uint8_t i = 0; i < 10; i++){
+    for(uint8_t i = 0; i < TACHOMETER_BUFFER_SIZE; i++){
         temp += buffer[i];
     }
 	return temp;
