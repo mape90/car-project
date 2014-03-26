@@ -126,9 +126,11 @@ void calcControl(uint8_t error, char* speed, uint8_t* angle)
 
 char calcError(uint8_t sensorValues)
 {
+	static char lastError = 0;
 	char error = 0;
 	char mostLeft = -1;
 	char mostRight = -1;
+
 
 	for(uint8_t i = 0;i < 8;i++)
 	{
@@ -148,56 +150,18 @@ char calcError(uint8_t sensorValues)
 	}
 	if(mostLeft < 0 || mostRight < 0)
 	{//no reference point found out of track
-		error = CONTROL_NO_REF_POINT;
-	}
-	else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH)
+        if(lastError < 7){
+            error = lastError + (lastError < 0) ? 1: -1;
+        }else{
+            error = CONTROL_NO_REF_POINT;
+        }
+	}else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH)
 	{
-        for(uint8_t i = 1; i < GOAL_MIN_WIDTH; i++)
-        {
-            if(!(sensorValues & (0x01 << (mostRight+i))))
-            {
-                error = 1;
-                break;
-            }
-        }
-        if(error)
-        {
-            error = GOAL_POINT;
-        }else
-        {
-            error = 0;
-        }
+        error = GOAL_POINT;
+    }else{
+        error = 7-2*mostRight;
+        lastError = error;
     }
-    if(error == 0)
-    {
-        if((7 - mostLeft) == mostRight)
-        { //same only one point
-            error = 7-2*mostRight;
-        }
-        else if(mostLeft < mostRight)
-        { //use left as controll
-            if(sensorValues & (0x80 >> (mostLeft + 1)) )
-            { // chek if line is between sensors
-                error = -6 + 2 * mostLeft;
-            }
-            else
-            {
-                error = -7 + 2 * mostLeft;
-            }
-        }
-        else
-        { //use right as controll
-            if(sensorValues & (0x01 << (mostRight + 1)) )
-            { // chek if line is between sensors
-                error = 6 - 2 * mostRight;
-            }
-            else
-            {
-                error = 6 - 2 * mostRight;
-            }
-        }
-    }
-
 	return error;
 }
 
