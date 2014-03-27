@@ -14,14 +14,10 @@
 #define GOAL_POINT                      ((int8_t)100)
 #define CONTROL_NO_REF_POINT            ((int8_t)101)
 
-//#define CONTROL_VALUE_MAX               255
-#define INTEGER_MAX                     20
+//#define CONTROL_VALUE_MAX             255
 
-#define P                               ((int8_t)9)
-#define I                               ((int8_t)0)
-#define D                               ((int8_t)0)
 
-#define BUMPER_READ_BUFF_SIZE           16
+#define BUMPER_READ_BUFF_SIZE           8
 #define TACHOMETER_BUFFER_SIZE          4
 
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
@@ -36,19 +32,26 @@
 
 #define MOTOR_SPEED_MAX_RPM             (int16_t)450
 #define MOTOR_ACC_MAX                   (int16_t)1000
-#define MOTOR_I_VALUE_MAX               (int16_t)10000  //max valuelue
+#define MOTOR_I_MAX                     1000  //max value
 
-#define MOTOR_SPEED_REDUCE              20
+#define MOTOR_SPEED_REDUCE              10
 
-#define MOTOR_P                         ((uint8_t)25)
-#define MOTOR_I                         ((uint8_t)7)
+#define MOTOR_P                         1000
+#define MOTOR_I                         70
+#define MOTOR_D                         50
 
 
 //SERVO
 
-#define SERVO_CONTROL_VALUE_MAX         ((int8_t)65)
-#define SERVO_VALUE_MAX                 ((int8_t)65)
-#define SERVO_VALUE_MIN                 ((int8_t)-65)
+#define SERVO_I_MAX                     15
+
+#define SERVO_P                         1100
+#define SERVO_I                         10
+#define SERVO_D                         15
+
+#define SERVO_CONTROL_VALUE_MAX         ((int8_t)50)
+#define SERVO_VALUE_MAX                 SERVO_CONTROL_VALUE_MAX
+#define SERVO_VALUE_MIN                 -SERVO_CONTROL_VALUE_MAX
 #define SERVO_PULSE_MIN                 ((int)2000)
 #define SERVO_PULSE_WIDTH               ((int)11)
 

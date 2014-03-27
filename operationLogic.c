@@ -6,6 +6,7 @@ extern uint8_t gLapCount;
 extern int8_t gLastError;
 extern uint8_t gBumperValue;
 extern bool gFindRoadTimerElapsed;
+extern struct PID_DATA *gPidStServo;
 
 /* Internal global variables */
 static volatile uint8_t gPreviousState = STATE_WAIT;
@@ -165,17 +166,17 @@ void calcControl(int8_t error, int* speed, int* angle)
 	if(error == CONTROL_NO_REF_POINT)
 	{
 		//turn same direction where last time turned
-        *angle = PID((getServoAngle() < 0) ? 7: -7);
-        *speed = calcMotorSpeed((getServoAngle() < 0) ? -7: 7);//TODO check!!
+        *angle = pid_Controller(0, ((getServoAngle() < 0) ? 7: -7), gPidStServo);
+        *speed = calcMotorSpeed(7);
 	}
 	else if(error == GOAL_POINT)
 	{
-        *angle = PID(0);
-        *speed = calcMotorSpeed(0);//TODO: should this be max speed?
+        *angle = pid_Controller(0, 0, gPidStServo);
+        *speed = calcMotorSpeed(0);
 	}
 	else
 	{
-		*angle = PID(error);
+		*angle = pid_Controller(0, error, gPidStServo);
 		*speed = calcMotorSpeed(error);
 	}
 }
@@ -228,7 +229,7 @@ void executeControl(int speed, int angle)
     writeServoControl(angle);//Servo
     setMotorSpeed(speed);//motor
 }
-
+/*
 int PID(int8_t error)
 {
     int control = P * error;
@@ -247,4 +248,4 @@ int PID(int8_t error)
     }
 
     return -(int)control;
-}
+}*/

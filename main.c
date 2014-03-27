@@ -22,6 +22,8 @@ uint8_t gLCDErrorFlags = 0;
 uint8_t gBumperValue = 0;
 struct PID_DATA *gPidStMotor;
 
+struct PID_DATA *gPidStServo;
+
 /* ISR's */
 ISR(TIMER0_OVF_vect)
 {
@@ -91,7 +93,12 @@ void setup(void) {
     TCNT5 = 0;
 
     gPidStMotor = malloc(sizeof(*gPidStMotor));
-    pid_Init(P, I, D, gPidStMotor);
+    gPidStMotor->maxSumError = MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1); 
+    pid_Init(MOTOR_P, MOTOR_I, MOTOR_D, gPidStMotor);
+
+    gPidStServo = malloc(sizeof(*gPidStServo));
+    gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
+    pid_Init(SERVO_P, SERVO_I, SERVO_D, gPidStServo);
 
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);

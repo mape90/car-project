@@ -1,4 +1,3 @@
-#include "motor.h"
 #include "includes.h"
 
 /* External Global Variables */
@@ -84,6 +83,7 @@ int tachometer2rpm(uint16_t val, uint8_t dir){
     }
 }
 
+/*
 int motorPI(int error_in_speed){
     error_in_speed /= MOTOR_SCALE_RPM;
 	int control = MOTOR_P * error_in_speed;
@@ -98,7 +98,7 @@ int motorPI(int error_in_speed){
     control += motor_I_sum;
 
     return control;
-}
+}*/
 
 //this function gives sum of 10 last readings from tacho meter
 uint16_t readTachometer(void)
