@@ -4,7 +4,7 @@
 #include "includes.h"
 
 void servo_init(void);
-char getServoAngle(void);
-void writeServoControl(int);
+int8_t getServoAngle(void);
+void writeServoControl(int8_t);
 
 #endif

@@ -25,26 +25,17 @@ void test_tachometer_PI_loop(){
     int controll_val = motorPI(1000-rpm);
     writeMotorPWM(controll_val);
     //writeMotorPWM(5000);
-    LCD_clear();
-    LCD_Write_int((int)rpm, 10);
+    //LCD_clear();
+    //LCD_Write_int((int)rpm, 10);
 }
 
 
 void test_controll_loop()
 { //test everything elese than states
     int angle, speed;
-
     char error = calcError(readBumper());
-
-    //setState(error);
     calcControl(error, &speed, &angle);
-    LCD_clear();
-    LCD_error(error);
-
-	//LCD_Write_String(error,1);
-
-	//_delay_ms(500);
-    executeControl(0, angle);
+    executeControl(speed, angle);
     gLastError = error;
 }
 

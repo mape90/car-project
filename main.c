@@ -67,8 +67,8 @@ int main(void)
         //test_motor_loop();
         test_controll_loop();
         //test_tachometer_PI_loop();
-		//loop();
-        LCD_Write_int((int)gBumperValue, 6);        
+	//loop();
+        //LCD_Write_int((int)gBumperValue, 7);        
         synchronizeLoopSpeed();
         
     }
@@ -83,7 +83,8 @@ void setup(void) {
 
     //init timer 1 (Servo)
     servo_init();
-    //init timer 4 (Motor)
+    //init timer 4 (Motor),
+    
     motor_init();
 
     //init timer 5 (Tachometer)
@@ -104,7 +105,7 @@ void loop(void){
 	}else{ //wait_state
         stopCar();
     }
-    LCD_update();
+    //LCD_update();
 }
 
 

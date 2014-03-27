@@ -3,7 +3,7 @@
 
 #include "includes.h"
 
-void LCD_update();
+void LCD_update(void);
 void handleButtonPress(void);
 
 void reportError(uint8_t errNo);

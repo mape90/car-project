@@ -7,28 +7,47 @@
 #define TICKS_PER_ROTATION              2
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
-#define LOOP_TIME_MS                    1000
-#define GOAL_MIN_WIDTH                  2
-#define GOAL_POINT                      100
-#define P                               5
-#define I                               1
-#define D                               0
+#define LOOP_TIME_MS                    50
+#define GOAL_MIN_WIDTH                  4
+
+#define GOAL_POINT                      ((int8_t)100)
+#define CONTROL_NO_REF_POINT            ((int8_t)101)
+
+//#define CONTROL_VALUE_MAX               255
+#define INTEGER_MAX                     20
+
+#define P                               ((int8_t)9)
+#define I                               ((int8_t)0)
+#define D                               ((int8_t)0)
 
 #define BUMPER_READ_BUFF_SIZE           16
 #define TACHOMETER_BUFFER_SIZE          4
-#define MOTOR_SPEED_MAX_RPM             1000
+
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
 
-#define MOTOR_SPEED_REDUCE              MOTOR_SPEED_MAX_RPM/9
+//MOTOR
 
 #define MOTOR_SCALE_RPM                 10
 
 #define MOTOR_CONTROL_MAX               (0xffff/3)
+#define MOTOR_SPEED_MAX_RPM             450
 #define MOTOR_ACC_MAX                   1000
-#define MOTOR_I_VALUE_MAX               MOTOR_CONTROL_MAX
+#define MOTOR_I_VALUE_MAX               10000
 
-#define MOTOR_P                         ((uint8_t)20)
-#define MOTOR_I                         ((uint8_t)2)
+#define MOTOR_SPEED_REDUCE              20
+
+#define MOTOR_P                         ((uint8_t)25)
+#define MOTOR_I                         ((uint8_t)7)
+
+
+//SERVO
+
+#define SERVO_CONTROL_VALUE_MAX         ((int8_t)65)
+#define SERVO_VALUE_MAX                 ((int8_t)65)
+#define SERVO_VALUE_MIN                 ((int8_t)-65)
+#define SERVO_PULSE_MIN                 ((int)2000)
+#define SERVO_PULSE_WIDTH               ((int)11)
+
 
 /* Port / pin -settings */
 #define BUMPER_REGISTER                 PINA       // Todo: set this to actual reg.
@@ -48,7 +67,7 @@
 #define BUTTONS_PIN                     PINA
 
 /* Pre-defined values */
-#define CONTROL_NO_REF_POINT            101
+
 
 #define MOTOR_BACKWARD                  0
 #define MOTOR_FORWARD                   1
@@ -58,15 +77,11 @@
 
 #define SERVO_ON                        ((uint8_t)1)
 #define SERVO_OFF                       ((uint8_t)0)
-#define SERVO_CONTROL_VALUE_MAX         90
 
-#define CONTROL_VALUE_MAX               255
-#define INTEGER_MAX                     200
 
-#define SERVO_VALUE_MAX                 ((int)45)
-#define SERVO_VALUE_MIN                 ((int)-45)
-#define SERVO_PULSE_MIN                 ((int)2000)
-#define SERVO_PULSE_WIDTH               ((int)11)
+
+
+
 
 #define STATE_WAIT                      1
 #define STATE_RUNNING                   2
