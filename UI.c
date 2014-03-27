@@ -3,7 +3,7 @@
 /* External global variables */
 extern uint8_t gState;
 extern bool gUICanUpdate;
-extern char gLastError;
+extern int8_t gLastError;
 extern int gCurrentRPM;
 extern uint8_t gLCDErrorFlags;
 
@@ -14,12 +14,7 @@ void LCD_update()
         LCD_clear();
         LCD_state(gState);
         LCD_error(gLastError);
-        { //TODO: check if this can be done some other way
-            char temp_buffer[10];
-            itoa (gCurrentRPM, temp_buffer, 10);
-            LCD_speed(temp_buffer);
-        }
-
+        LCD_Write_int(gCurrentRPM, 10);
         LCD_setTimer();
     }else{
         //Do nothing

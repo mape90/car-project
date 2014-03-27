@@ -21,7 +21,13 @@ void setMotorSpeed(int rpm)
 {
     gTachometerValue = readTachometer();
     gCurrentRPM = tachometer2rpm(gTachometerValue, (rpm<0)? MOTOR_BACKWARD : MOTOR_FORWARD);
-    writeMotorPWM(motorPI(rpm - gCurrentRPM));
+
+    if(rpm == 0){ // break
+        writeMotorPWM(0);
+    }else{
+        writeMotorPWM(motorPI(rpm - gCurrentRPM));
+    }
+
 }
 
 inline int getMotorRPM(void)
@@ -31,28 +37,28 @@ inline int getMotorRPM(void)
 
 void writeMotorPWM(int pwm)
 {
-  
     static int lastPWM = 0;
+
+    if(pwm == 0){           //secure that 0 pwm will always stop motor in all cases bacause min pwm can be over 0
+        PORTK &= 0xfc;      //break: 00
+        OCR4A = 0;          //set pwm sycle to zero
+        lastPWM = 0;
+        return;
+    }
+
     //limit acceleration
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
     //limit control values
-    if(abs(pwm) > MOTOR_CONTROL_MAX){
-        pwm = ((pwm < 0) ? -1*MOTOR_CONTROL_MAX : MOTOR_CONTROL_MAX);
+    if(pwm > MOTOR_CONTROL_MAX){
+        pwm = MOTOR_CONTROL_MAX;
+    }else if(pwm < MOTOR_CONTROL_MIN){
+        pwm = MOTOR_CONTROL_MIN;
     }
-	/*LCD_clear();
-	char bfr[5];
-	itoa(pwm, bfr, 10);
-
-	LCD_Write_String(bfr, 1);*/
 
     if(lastPWM != pwm){
-        if(pwm == 0)
-        {
-            PORTK &= 0xfc;      //break: 00
-            OCR4A = 0;          //set pwm sycle to zero
-        }else if(pwm > 0)
+        if(pwm > 0)
         {
             PORTK &= 0xfc;       //Clockwise, clear bits
             PORTK |= (1 << MOTOR_PIN_INA);
@@ -77,7 +83,7 @@ int tachometer2rpm(uint16_t val, uint8_t dir){
 }
 
 int motorPI(int error_in_speed){
-      error_in_speed /= MOTOR_SCALE_RPM;
+    error_in_speed /= MOTOR_SCALE_RPM;
 	int control = MOTOR_P * error_in_speed;
 	static int motor_I_sum = 0;
 

@@ -3,7 +3,7 @@
 /* External Global variables */
 extern volatile uint8_t gState;
 extern uint8_t gLapCount;
-extern char gLastError;
+extern int8_t gLastError;
 extern uint8_t gBumperValue;
 extern bool gFindRoadTimerElapsed;
 
@@ -14,7 +14,7 @@ static int gIntegerSum = 0;
 void runCar(void)
 {
     int angle, speed;
-    char error = calcError(readBumper());
+    int8_t error = calcError(readBumper());
     setState(error);
     calcControl(error, &speed, &angle);
     executeControl(speed, angle);
@@ -47,7 +47,7 @@ void setFindTimer()
 
 
 
-void setState(char error)
+void setState(int8_t error)
 {
 	if(error == GOAL_POINT)
 	{
@@ -199,16 +199,16 @@ int8_t calcError(uint8_t sensorValues)
 		    break;
 	    }
     }
-    
+
     //LCD_Write_int((int)mostLeft,4);
     //LCD_Write_int((int)mostRight,5);
-    
+
 
     if(mostLeft == 20 || mostRight == 20){//no reference point found out of track
       if(lastError < 7 && lastError > -7){
-	  error = (lastError + ((lastError < 0) ? 1: -1));
+        error = (lastError + ((lastError < 0) ? 1: -1));
       }else{
-	  error = CONTROL_NO_REF_POINT;
+        error = CONTROL_NO_REF_POINT;
       }
     }else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
       error = GOAL_POINT;
@@ -219,7 +219,7 @@ int8_t calcError(uint8_t sensorValues)
     }
 
     //LCD_Write_int(error,6);
-    
+
     return error;
 }
 
@@ -231,9 +231,8 @@ void executeControl(int speed, int angle)
 
 int PID(int8_t error)
 {
-    
     int control = P * error;
-    gIntegerSum += I*error;
+    gIntegerSum += I * error;
 
     if(abs(gIntegerSum) > INTEGER_MAX)
     {//integer wind up

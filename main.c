@@ -55,22 +55,21 @@ ISR(INT5_vect){
 int main(void)
 {
     setup();
-    
+
     LCD_Write_String("test start",8);
     _delay_ms(1000);
-	//OCR4A = 30000;
     while(1)
     {
-        
+
         //writeMotorPWM(1000);
         //test_servo_loop();
         //test_motor_loop();
         test_controll_loop();
         //test_tachometer_PI_loop();
-	//loop();
-        //LCD_Write_int((int)gBumperValue, 7);        
+        //loop();
+        //LCD_Write_int((int)gBumperValue, 7);
         synchronizeLoopSpeed();
-        
+
     }
     return 0;
 }
@@ -80,11 +79,10 @@ void setup(void) {
     //init timer 0 (Events)
     initEventTimer();
 
-
     //init timer 1 (Servo)
     servo_init();
-    //init timer 4 (Motor),
-    
+
+    //init timer 4 (Motor)
     motor_init();
 
     //init timer 5 (Tachometer)
@@ -119,5 +117,3 @@ void synchronizeLoopSpeed(void)
 	gLoopTimeNotElapsed = true;
 	timer_enable(TIMER_1, LOOP_TIME_MS);
 }
-
-

@@ -33,7 +33,7 @@ void test_tachometer_PI_loop(){
 void test_controll_loop()
 { //test everything elese than states
     int angle, speed;
-    char error = calcError(readBumper());
+    int8_t error = calcError(readBumper());
     calcControl(error, &speed, &angle);
     executeControl(speed, angle);
     gLastError = error;

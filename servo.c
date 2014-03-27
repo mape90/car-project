@@ -17,11 +17,6 @@ int8_t getServoAngle(void){
 
 void writeServoControl(int8_t deg){
     if(gWheelOrientation != deg){
-	//LCD_Write_int(deg, 3);
-
-	//char bfr2[10];
-	//itoa((SERVO_PULSE_MIN + (deg + 90) * SERVO_PULSE_WIDTH), bfr2, 10);
-	//LCD_Write_String(bfr2, 2);
         if(deg < SERVO_VALUE_MIN){
             deg = SERVO_VALUE_MIN;
             //reportError(ERR_SERVO_UNDER_MIN_CONTROL);
@@ -29,7 +24,6 @@ void writeServoControl(int8_t deg){
             deg = SERVO_VALUE_MAX;
             //reportError(ERR_SERVO_OVER_MAX_CONTROL);
         }
-        //TCNT1 = 0;
         OCR1A = SERVO_PULSE_MIN + (deg + 90) * SERVO_PULSE_WIDTH;
         gWheelOrientation = deg;
     }

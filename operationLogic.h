@@ -19,7 +19,7 @@ int  PID(int8_t);
 uint8_t readBumper(void);
 
 void setNewState(uint8_t newState);
-void setState(char error);
+void setState(int8_t error);
 void setFindTimer(void);
 void calcBumperValue(void);
 bool isValidBumperValue(uint8_t bumperVal);
