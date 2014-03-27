@@ -4,6 +4,7 @@
 /* External Global Variables */
 extern uint16_t gTachometerValue;
 extern int gCurrentRPM;
+extern struct PID_DATA* gPidStMotor;
 
 void motor_init(void)
 {
@@ -25,7 +26,8 @@ void setMotorSpeed(int rpm)
     if(rpm == 0){ // break
         writeMotorPWM(0);
     }else{
-        writeMotorPWM(motorPI(rpm - gCurrentRPM));
+        //writeMotorPWM(motorPI(rpm - gCurrentRPM));
+        writeMotorPWM(pid_Controller(rpm, gCurrentRPM, gPidStMotor));
     }
 
 }

@@ -17,6 +17,7 @@
 #include "UI.h"
 #include "eventTimer.h"
 #include "Tests.h"
+#include "pid.h"
 
 #endif
 

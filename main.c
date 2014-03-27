@@ -20,6 +20,7 @@ bool gFindRoadTimerElapsed = false;
 bool gUICanUpdate = true;
 uint8_t gLCDErrorFlags = 0;
 uint8_t gBumperValue = 0;
+struct PID_DATA *gPidStMotor;
 
 /* ISR's */
 ISR(TIMER0_OVF_vect)
@@ -88,6 +89,9 @@ void setup(void) {
     //init timer 5 (Tachometer)
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
+
+    gPidStMotor = malloc(sizeof(*gPidStMotor));
+    pid_Init(P, I, D, gPidStMotor);
 
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);
