@@ -14,8 +14,10 @@ void LCD_update()
         LCD_clear();
         LCD_state(gState);
         LCD_error(gLastError);
-        LCD_Write_int(gCurrentRPM, 10);
+        LCD_Write_int(getServoAngle(),9, 0);
+        LCD_Write_int(gCurrentRPM, 10, 0);
         LCD_setTimer();
+        gUICanUpdate = false;
     }else{
         //Do nothing
     }
@@ -32,6 +34,7 @@ inline void reportError(uint8_t errNo)
 
 void handleButtonPress(void)
 {
+    //LCD_Write_String("Button Pressed", 15);
 	switch(gState)
 	{
 		case STATE_WAIT:
@@ -42,7 +45,6 @@ void handleButtonPress(void)
 			setNewState(STATE_WAIT);
 			break;
 		default:
-			//LCD info?
 			break;
     }
 }
@@ -79,7 +81,7 @@ void USART_LCD_Init(unsigned int ubrr){
 void LCD_ClearRow(uint8_t row)
 {
     char emptyLine[] = "                    ";
-    LCD_Write_String(emptyLine, row);
+    LCD_Write_String(emptyLine, row,0);
 }
 
 #define LCD_INFO_MAX_LENGTH 20
@@ -97,13 +99,13 @@ void LCD_Write_Info(char* prefix, int value, uint8_t row)
     strncpy(buffer, prefix, strlen(prefix));
     strncat(buffer, intValue, strlen(intValue));
 
-    LCD_Write_String(buffer, row);
+    LCD_Write_String(buffer, row, 0);
 }
 
-void LCD_Write_String(char* str, uint8_t row)
+void LCD_Write_String(char* str, uint8_t row, uint8_t col)
 {
 	USART_Transmit(DRAW_STRING);
-	USART_Transmit(COLUMN_0);
+	USART_Transmit(col);
 	USART_Transmit(row);
 	USART_Transmit(FONT);
 	USART_Transmit(WHITE);
@@ -142,7 +144,7 @@ void LCD_state(uint8_t gState)
             strncpy(state_char, "Unknown State!\0", 15);
 	}
 
-	LCD_Write_String(state_char,ROW_1);
+	LCD_Write_String(state_char,ROW_1, 0);
 
 }
 
@@ -163,22 +165,22 @@ void LCD_error(char error)
 	}
 	char str[25] = "Error: ";
 	strncat(str, err,strlen(err));
-	LCD_Write_String(str,ROW_2);
+	LCD_Write_String(str,ROW_2, 0);
 }
 
 void LCD_speed(char* speed)
 {
 	char str[25] = "Speed: ";
 	strcat(str,speed);
-	LCD_Write_String(str, ROW_3);
+	LCD_Write_String(str, ROW_3, 0);
 }
 
-void LCD_Write_int(int num, uint8_t row)
+void LCD_Write_int(int num, uint8_t row, uint8_t col)
 {
 	char temp[10];
 	itoa(num, temp,10);
 
-	LCD_Write_String(temp,row);
+	LCD_Write_String(temp,row, col);
 }
 
 void LCD_clear(void)
@@ -197,6 +199,6 @@ inline void LCD_WriteErrorFlags(uint8_t errNo)
 }
 
 inline void LCD_setTimer(void)
-{
+{   
     timer_enable(TIMER_2, LCD_REFRESH_RATE_MS);
 }

@@ -115,7 +115,6 @@ void calcBumperValue(void)
     }
 
     bumperVal = ~BUMPER_REGISTER;
-    //LCD_Write_int((int)bumperVal, 7);
 
     //if (isValidBumperValue(bumperVal))
 
@@ -201,25 +200,21 @@ int8_t calcError(uint8_t sensorValues)
 	    }
     }
 
-    //LCD_Write_int((int)mostLeft,4);
-    //LCD_Write_int((int)mostRight,5);
-
 
     if(mostLeft == 20 || mostRight == 20){//no reference point found out of track
       if(lastError < 7 && lastError > -7){
-        error = (lastError + ((lastError < 0) ? 1: -1));
+        error =lastError;// (lastError + ((lastError < 0) ? 1: -1));
       }else{
         error = CONTROL_NO_REF_POINT;
       }
     }else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
-      error = GOAL_POINT;
+      error = 0;
     }else{
-	//LCD_Write_int(33, 10);
+
         error = (int8_t)7 - (int8_t)2*mostRight;
         lastError = error;
     }
 
-    //LCD_Write_int(error,6);
 
     return error;
 }

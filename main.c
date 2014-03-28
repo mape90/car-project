@@ -59,7 +59,7 @@ int main(void)
 {
     setup();
 
-    LCD_Write_String("test start",8);
+    LCD_Write_String("test start",8, 0);
     _delay_ms(1000);
     while(1)
     {
@@ -67,10 +67,10 @@ int main(void)
         //writeMotorPWM(1000);
         //test_servo_loop();
         //test_motor_loop();
-        test_controll_loop();
+        //test_controll_loop();
         //test_tachometer_PI_loop();
-        //loop();
-        //LCD_Write_int((int)gBumperValue, 7);
+        loop();
+        //LCD_Write_int((int)gBumperValue, 7, 0);
         synchronizeLoopSpeed();
 
     }
@@ -92,13 +92,19 @@ void setup(void) {
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
 
+    EIMSK |= _BV(INT5);
+
     gPidStMotor = malloc(sizeof(*gPidStMotor));
-    gPidStMotor->maxSumError = MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1); 
+    
     pid_Init(MOTOR_P, MOTOR_I, MOTOR_D, gPidStMotor);
+    //gPidStMotor->maxSumError = (MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1));
+    
+    //gPidStMotor->sumError = 0;
 
     gPidStServo = malloc(sizeof(*gPidStServo));
-    gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
+   
     pid_Init(SERVO_P, SERVO_I, SERVO_D, gPidStServo);
+    gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
 
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);
@@ -107,23 +113,24 @@ void setup(void) {
 }
 
 void loop(void){
+    for(int8_t i = 0;i<BUMPER_READ_BUFF_SIZE;i++){
+        calcBumperValue();
+    }
 	if(gState == STATE_RUNNING || gState == STATE_FINDING_ROAD){
 		runCar();
-	}else if(gState == STATE_ROAD_NOT_FOUND){
-		stopCar();
 	}else{ //wait_state
         stopCar();
     }
-    //LCD_update();
+    //
 }
 
 
 void synchronizeLoopSpeed(void)
 {
 	while(gLoopTimeNotElapsed)
-	{
-        calcBumperValue();
+	{  
 	}
+    LCD_update();
 
 	gLoopTimeNotElapsed = true;
 	timer_enable(TIMER_1, LOOP_TIME_MS);

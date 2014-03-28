@@ -8,8 +8,8 @@
 #define TICKS_PER_ROTATION              2
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
-#define LOOP_TIME_MS                    50 //under 40 ms looptime will cause problems
-#define GOAL_MIN_WIDTH                  4
+#define LOOP_TIME_MS                    30 //under 40 ms looptime will cause problems
+#define GOAL_MIN_WIDTH                  2
 
 #define GOAL_POINT                      ((int8_t)100)
 #define CONTROL_NO_REF_POINT            ((int8_t)101)
@@ -17,7 +17,7 @@
 //#define CONTROL_VALUE_MAX             255
 
 
-#define BUMPER_READ_BUFF_SIZE           8
+#define BUMPER_READ_BUFF_SIZE           6
 #define TACHOMETER_BUFFER_SIZE          4
 
 #define ROAD_FIND_SPEED_RPM             (MOTOR_SPEED_MAX_RPM/2)
@@ -27,17 +27,17 @@
 #define MOTOR_SCALE_RPM                 10
 
 #define MOTOR_CONTROL_MAX               ((int)(0xffff/3))
-#define MOTOR_CONTROL_MIN               (int)-1000
+#define MOTOR_CONTROL_MIN               (int)100
 
 
 #define MOTOR_SPEED_MAX_RPM             (int16_t)450
 #define MOTOR_ACC_MAX                   (int16_t)1000
-#define MOTOR_I_MAX                     1000  //max value
+#define MOTOR_I_MAX                     ((uint8_t)1000/128)  //max value
 
 #define MOTOR_SPEED_REDUCE              10
 
 #define MOTOR_P                         1000
-#define MOTOR_I                         70
+#define MOTOR_I                         10
 #define MOTOR_D                         50
 
 
@@ -49,7 +49,7 @@
 #define SERVO_I                         10
 #define SERVO_D                         15
 
-#define SERVO_CONTROL_VALUE_MAX         ((int8_t)50)
+#define SERVO_CONTROL_VALUE_MAX         ((int8_t)70)
 #define SERVO_VALUE_MAX                 SERVO_CONTROL_VALUE_MAX
 #define SERVO_VALUE_MIN                 -SERVO_CONTROL_VALUE_MAX
 #define SERVO_PULSE_MIN                 ((int)2000)
@@ -57,7 +57,7 @@
 
 
 /* Port / pin -settings */
-#define BUMPER_REGISTER                 PINA       // Todo: set this to actual reg.
+#define BUMPER_REGISTER                 PINA      
 #define SERVO_PIN                       PB5
 #define MOTOR_PIN_PWM                   PH3
 #define MOTOR_PIN_INA                   PK0
