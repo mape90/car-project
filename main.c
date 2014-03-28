@@ -67,9 +67,9 @@ int main(void)
         //writeMotorPWM(1000);
         //test_servo_loop();
         //test_motor_loop();
-        test_controll_loop();
+        //test_controll_loop();
         //test_tachometer_PI_loop();
-        //loop();
+        loop();
         //LCD_Write_int((int)gBumperValue, 7);
         synchronizeLoopSpeed();
 
@@ -92,9 +92,12 @@ void setup(void) {
     TCCR5B = _BV(ICNC5)| _BV(CS52) | _BV(CS51); //ICNC5 enables filtering
     TCNT5 = 0;
 
+    EIMSK = _BV(INT5);
+
     gPidStMotor = malloc(sizeof(*gPidStMotor));
-    gPidStMotor->maxSumError = MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1); 
+     
     pid_Init(MOTOR_P, MOTOR_I, MOTOR_D, gPidStMotor);
+//gPidStMotor->maxSumError = 10;//MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1);
 
     gPidStServo = malloc(sizeof(*gPidStServo));
     gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
@@ -114,7 +117,7 @@ void loop(void){
 	}else{ //wait_state
         stopCar();
     }
-    //LCD_update();
+    LCD_update();
 }
 
 

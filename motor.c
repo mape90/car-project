@@ -46,13 +46,15 @@ void writeMotorPWM(int pwm)
         lastPWM = 0;
         return;
     }
-
+    
     //limit acceleration
+    
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
     //limit control values
     if(pwm > MOTOR_CONTROL_MAX){
+        //LCD_Write_String("TEST",10);
         pwm = MOTOR_CONTROL_MAX;
     }else if(pwm < MOTOR_CONTROL_MIN){
         pwm = MOTOR_CONTROL_MIN;

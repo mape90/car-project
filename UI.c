@@ -16,6 +16,7 @@ void LCD_update()
         LCD_error(gLastError);
         LCD_Write_int(gCurrentRPM, 10);
         LCD_setTimer();
+        gUICanUpdate = false;
     }else{
         //Do nothing
     }

@@ -42,8 +42,7 @@ void handleFindTimer(){
 
 void setFindTimer()
 {
-    timer_enable(TIMER_3, ROAD_SEARCH_TIME_MS);
-	//set timer on if it isnt running
+    timer_enable(TIMER_3, ROAD_SEARCH_TIME_MS); //set timer on if it isnt running
 }
 
 
@@ -166,7 +165,7 @@ void calcControl(int8_t error, int* speed, int* angle)
 	if(error == CONTROL_NO_REF_POINT)
 	{
 		//turn same direction where last time turned
-        *angle = pid_Controller(0, ((getServoAngle() < 0) ? 7: -7), gPidStServo);
+        *angle = pid_Controller(0, 7, gPidStServo);
         *speed = calcMotorSpeed(7);
 	}
 	else if(error == GOAL_POINT)
@@ -201,20 +200,15 @@ int8_t calcError(uint8_t sensorValues)
 	    }
     }
 
-    //LCD_Write_int((int)mostLeft,4);
-    //LCD_Write_int((int)mostRight,5);
-
-
     if(mostLeft == 20 || mostRight == 20){//no reference point found out of track
       if(lastError < 7 && lastError > -7){
-        error = (lastError + ((lastError < 0) ? 1: -1));
+        error = lastError;
       }else{
         error = CONTROL_NO_REF_POINT;
       }
     }else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
       error = GOAL_POINT;
     }else{
-	//LCD_Write_int(33, 10);
         error = (int8_t)7 - (int8_t)2*mostRight;
         lastError = error;
     }
@@ -229,23 +223,3 @@ void executeControl(int speed, int angle)
     writeServoControl(angle);//Servo
     setMotorSpeed(speed);//motor
 }
-/*
-int PID(int8_t error)
-{
-    int control = P * error;
-    gIntegerSum += I * error;
-
-    if(abs(gIntegerSum) > INTEGER_MAX)
-    {//integer wind up
-        gIntegerSum = ((gIntegerSum < 0) ? -1* INTEGER_MAX : INTEGER_MAX);
-    }
-
-    control += (D * ((int)error - (int)gLastError) + gIntegerSum);
-
-    if(abs(control) > SERVO_CONTROL_VALUE_MAX)
-    {//limit control values
-        control = ((control < 0) ? -1*SERVO_CONTROL_VALUE_MAX : SERVO_CONTROL_VALUE_MAX);
-    }
-
-    return -(int)control;
-}*/
