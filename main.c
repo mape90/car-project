@@ -49,8 +49,16 @@ ISR(TIMER0_OVF_vect)
     }
 }
 
+volatile bool ready = false;
+volatile bool running_state = false;
+
 ISR(INT5_vect){
-	handleButtonPress();
+	//handleButtonPress();
+    if(running_state){
+        gFindRoadTimerElapsed = true;
+    }else{
+        ready = true;
+    }
 }
 
 //-----------------------------------//
@@ -59,17 +67,23 @@ int main(void)
 {
     setup();
 
-    LCD_Write_String("test start",8);
-    _delay_ms(1000);
+    LCD_Write_String("Ready",8);
+    while(!ready);
+    _delay_ms(500);
+    running_state = true;
+    LCD_clear();
+    LCD_Write_String("Running",8);
+    
+    
     while(1)
     {
 
         //writeMotorPWM(1000);
         //test_servo_loop();
         //test_motor_loop();
-        //test_controll_loop();
+        test_controll_loop();
         //test_tachometer_PI_loop();
-        loop();
+        //loop();
         //LCD_Write_int((int)gBumperValue, 7);
         synchronizeLoopSpeed();
 
@@ -100,8 +114,9 @@ void setup(void) {
 //gPidStMotor->maxSumError = 10;//MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1);
 
     gPidStServo = malloc(sizeof(*gPidStServo));
-    gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
+    
     pid_Init(SERVO_P, SERVO_I, SERVO_D, gPidStServo);
+    gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
 
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);

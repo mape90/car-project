@@ -9,7 +9,7 @@
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
 #define LOOP_TIME_MS                    3 
-#define GOAL_MIN_WIDTH                  4
+#define GOAL_MIN_WIDTH                  1
 
 #define GOAL_POINT                      ((int8_t)100)
 #define CONTROL_NO_REF_POINT            ((int8_t)101)
@@ -30,7 +30,7 @@
 #define MOTOR_CONTROL_MIN               (int)-1000
 
 
-#define MOTOR_SPEED_MAX_RPM             (int16_t)900 //850
+#define MOTOR_SPEED_MAX_RPM             (int16_t)750 //850
 #define MOTOR_ACC_MAX                   (int16_t)10000
 #define MOTOR_I_MAX                     50  //max value
 
@@ -43,7 +43,7 @@
 
 //SERVO
 
-#define SERVO_I_MAX                     15
+#define SERVO_I_MAX                     15*128
 
 #define SERVO_P                         1100
 #define SERVO_I                         10

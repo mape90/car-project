@@ -77,11 +77,11 @@ int16_t pid_Controller(int16_t setPoint, int16_t processValue, struct PID_DATA *
   // Calculate Iterm and limit integral runaway
   temp = pid_st->sumError + error;
   if(temp > pid_st->maxSumError){
-    i_term = MAX_I_TERM;
+    i_term = pid_st->maxSumError * pid_st->I_Factor;
     pid_st->sumError = pid_st->maxSumError;
   }
   else if(temp < -pid_st->maxSumError){
-    i_term = -MAX_I_TERM;
+    i_term = -pid_st->maxSumError* pid_st->I_Factor;
     pid_st->sumError = -pid_st->maxSumError;
   }
   else{

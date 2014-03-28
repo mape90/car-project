@@ -1,7 +1,7 @@
 #include "includes.h"
 
 extern char gLastError;
-
+extern volatile bool gFindRoadTimerElapsed;
 void test_motor_loop()
 { //dummy test
     //setMotorSpeed(300);
@@ -29,14 +29,24 @@ void test_tachometer_PI_loop(){
     //LCD_Write_int((int)rpm, 10);
 }
 
+bool writenText = false;
 
 void test_controll_loop()
 { //test everything elese than states
-    int angle, speed;
-    int8_t error = calcError(readBumper());
-    calcControl(error, &speed, &angle);
-    executeControl(speed, angle);
-    gLastError = error;
+    if(!gFindRoadTimerElapsed){
+        int angle, speed;
+        int8_t error = calcError(readBumper());
+        calcControl(error, &speed, &angle);
+        executeControl(speed, angle);
+        gLastError = error;
+    }else{
+        writeMotorPWM(0);
+        if(!writenText){
+            writenText = true;
+            LCD_clear();
+            LCD_Write_String("      Stopped",8);
+        }
+    }
 }
 
 void test_servo_loop()

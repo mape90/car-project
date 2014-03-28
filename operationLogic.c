@@ -8,9 +8,11 @@ extern uint8_t gBumperValue;
 extern bool gFindRoadTimerElapsed;
 extern struct PID_DATA *gPidStServo;
 
+
 /* Internal global variables */
 static volatile uint8_t gPreviousState = STATE_WAIT;
 static int gIntegerSum = 0;
+static int8_t lastError = 0;
 
 void runCar(void)
 {
@@ -160,21 +162,33 @@ int calcMotorSpeed(int8_t error)
         return 0;
 }
 
+static bool argh = true;
+
 void calcControl(int8_t error, int* speed, int* angle)
 {
 	if(error == CONTROL_NO_REF_POINT)
 	{
+        if(argh){
+            setFindTimer();
+            argh = false;
+        }
+        
 		//turn same direction where last time turned
-        *angle = pid_Controller(0, 7, gPidStServo);
+        if(lastError >= 0){
+            *angle = pid_Controller(0, 7, gPidStServo);}
+        else{
+            *angle = pid_Controller(0, -7, gPidStServo);}
         *speed = calcMotorSpeed(7);
 	}
 	else if(error == GOAL_POINT)
 	{
-        *angle = pid_Controller(0, 0, gPidStServo);
+        if(!argh){timer_disable(TIMER_3);argh = true;}
+        *angle = pid_Controller(0, lastError, gPidStServo);
         *speed = calcMotorSpeed(0);
 	}
 	else
 	{
+        if(!argh){timer_disable(TIMER_3);argh = true;}
 		*angle = pid_Controller(0, error, gPidStServo);
 		*speed = calcMotorSpeed(error);
 	}
@@ -182,7 +196,7 @@ void calcControl(int8_t error, int* speed, int* angle)
 
 int8_t calcError(uint8_t sensorValues)
 {
-    static int8_t lastError = 0;
+    
     int8_t error = 0;
     int8_t mostLeft = 20;
     int8_t mostRight = 20;
