@@ -36,9 +36,9 @@
 
 #define MOTOR_SPEED_REDUCE              10
 
-#define MOTOR_P                         1000
-#define MOTOR_I                         10
-#define MOTOR_D                         50
+#define MOTOR_P                         10
+#define MOTOR_I                         0
+#define MOTOR_D                         0
 
 
 //SERVO

@@ -18,6 +18,7 @@ void runCar(void)
     int8_t error = calcError(readBumper());
     setState(error);
     calcControl(error, &speed, &angle);
+    LCD_Write_int(speed, 3,0);
     executeControl(speed, angle);
     gLastError = error;
 }
@@ -92,7 +93,6 @@ bool isValidBumperValue(uint8_t bumperVal)
     uint8_t itr = 0x01;
     while (itr <= 0x80)
     {
-        if (itr & bumperVal)
             counter++;
         itr = (itr << 1);
     }

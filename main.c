@@ -97,8 +97,6 @@ void setup(void) {
     gPidStMotor = malloc(sizeof(*gPidStMotor));
     
     pid_Init(MOTOR_P, MOTOR_I, MOTOR_D, gPidStMotor);
-    //gPidStMotor->maxSumError = (MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1));
-    
     //gPidStMotor->sumError = 0;
 
     gPidStServo = malloc(sizeof(*gPidStServo));
@@ -109,6 +107,10 @@ void setup(void) {
     writeServoControl(0);
     USART_LCD_Init(MYUBRR);
     sei();
+
+    //LCD_Write_int(gPidStMotor->maxSumError, 4,0);
+    //LCD_Write_int(MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1),5,0);
+    //while(1){}
 
 }
 

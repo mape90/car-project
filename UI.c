@@ -6,7 +6,8 @@ extern bool gUICanUpdate;
 extern int8_t gLastError;
 extern int gCurrentRPM;
 extern uint8_t gLCDErrorFlags;
-
+extern struct PID_DATA *gPidStServo;
+extern struct PID_DATA *gPidStMotor;
 
 void LCD_update()
 {
@@ -17,6 +18,8 @@ void LCD_update()
         LCD_Write_int(getServoAngle(),9, 0);
         LCD_Write_int(gCurrentRPM, 10, 0);
         LCD_setTimer();
+        LCD_Write_PID(gPidStServo, 12);
+        LCD_Write_PID(gPidStMotor, 15);
         gUICanUpdate = false;
     }else{
         //Do nothing
@@ -104,12 +107,12 @@ void LCD_Write_Info(char* prefix, int value, uint8_t row)
 
 void LCD_Write_PID(pidData_t *pid, uint8_t row)
 {
-    LCD_Write_String("PID: ", row, 0);
-    LCD_Write_int(pid->P_Factor, row, 5);
-    LCD_Write_String(", ", row, 9);
-    LCD_Write_int(pid->I_Factor, row, 11);
-    LCD_Write_String(", ", row, 16);
-    LCD_Write_int(pid->D_Factor, row, 18);
+    LCD_Write_String("PID:", row, 0);
+    LCD_Write_int(pid->P_Factor, row, 4);
+    LCD_Write_String(",", row, 8);
+    LCD_Write_int(pid->I_Factor, row, 9);
+    LCD_Write_String(",", row, 13);
+    LCD_Write_int(pid->D_Factor, row, 14);
     LCD_Write_String("SumErr: ", row+1, 0);
     LCD_Write_int(pid->sumError, row+1, 8);
 
