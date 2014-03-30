@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="car-project" />
+		<Option pch_mode="2" />
+		<Option compiler="avr-gcc" />
+		<Build>
+			<Target title="Release">
+				<Option output="bin/Release/car-project.elf" prefix_auto="1" extension_auto="0" />
+				<Option working_dir="" />
+				<Option object_output="obj/Release/" />
+				<Option type="5" />
+				<Option compiler="avr-gcc" />
+				<Compiler>
+					<Add option="-Os" />
+					<Add option="-std=c99" />
+				</Compiler>
+			</Target>
+			<Environment>
+				<Variable name="MCU" value="atmega2560" />
+			</Environment>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-mmcu=atmega2560" />
+			<Add option="-DF_CPU=16000000UL" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/WinAVR-20100110/bin/" />
+		</Compiler>
+		<ResourceCompiler>
+			<Add directory="C:/Program Files (x86)/CodeBlocks/WinAVR-20100110/bin" />
+		</ResourceCompiler>
+		<Linker>
+			<Add option="-mmcu=atmega2560" />
+			<Add directory="C:/Program Files (x86)/CodeBlocks/WinAVR-20100110/bin/" />
+		</Linker>
+		<ExtraCommands>
+			<Add after="avr-size --mcu=atmega2560 --format=avr $(TARGET_OUTPUT_FILE)" />
+		</ExtraCommands>
+		<Unit filename="Tests.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="Tests.h" />
+		<Unit filename="UI.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="UI.h" />
+		<Unit filename="definitions.h" />
+		<Unit filename="eventTimer.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="eventTimer.h" />
+		<Unit filename="includes.h" />
+		<Unit filename="main.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="motor.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="motor.h" />
+		<Unit filename="operationLogic.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="operationLogic.h" />
+		<Unit filename="pid.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="pid.h" />
+		<Unit filename="servo.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="servo.h" />
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

@@ -10,7 +10,7 @@ extern volatile bool gLoopTimeNotElapsed;
 extern bool gUICanUpdate;
 extern bool gFindRoadTimerElapsed;
 
-inline void initEventTimer(void)
+inline void timer_init(void)
 {
     TCCR0B |= ((1 << CS01)|(1 << CS00)); // 64
     TCNT0 = 0;
@@ -41,24 +41,27 @@ inline void timer_update(uint8_t timer)
     (timer_current_value[timer])--;
 }
 
+/* not in use
 inline void timer_zero_value(uint8_t timer)
 {
   timer_current_value[timer] = 0;
 }
-
-inline void disable_wait(void)
+*/
+inline void timer_routine_disableWait(void)
 {
     gLoopTimeNotElapsed = false;
 }
 
-inline void disableGuiUpdateWait(void)
+inline void timer_routine_disableGuiUpdateWait(void)
 {
     gUICanUpdate = true;
 }
 
-inline void changeToRoadNotFoundState(void)
+inline void timer_routine_changeToRoadNotFoundState(void)
 {
     gFindRoadTimerElapsed = true;
 }
+
+
 
 //-----------------------------------//

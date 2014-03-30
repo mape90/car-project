@@ -3,8 +3,8 @@
 
 #include "includes.h"
 
-void servo_init(void);
-int8_t getServoAngle(void);
-void writeServoControl(int8_t);
+void                servo_init(void);
+int8_t              servo_getAngle(void);
+void                servo_writeControl(int8_t);
 
 #endif

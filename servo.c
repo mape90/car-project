@@ -11,11 +11,11 @@ void servo_init(void)
 }
 
 
-int8_t getServoAngle(void){
+int8_t servo_getAngle(void){
     return gWheelOrientation;
 }
 
-void writeServoControl(int8_t deg){
+void servo_writeControl(int8_t deg){
     if(gWheelOrientation != deg){
         if(deg < SERVO_VALUE_MIN){
             deg = SERVO_VALUE_MIN;
