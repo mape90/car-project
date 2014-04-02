@@ -19,9 +19,9 @@
 	"Tests.h"
 	"pid.h"
 
-1396215291 c:\users\suomalainen\documents\github\car-project\definitions.h
+1396222086 c:\users\suomalainen\documents\github\car-project\definitions.h
 
-1396221618 c:\users\suomalainen\documents\github\car-project\operationlogic.h
+1396465517 c:\users\suomalainen\documents\github\car-project\operationlogic.h
 
 1396221983 c:\users\suomalainen\documents\github\car-project\motor.h
 
@@ -40,7 +40,7 @@
 1396215291 source:c:\users\suomalainen\documents\github\car-project\pid.c
 	"includes.h"
 
-1396215291 source:c:\users\suomalainen\documents\github\car-project\servo.c
+1396222060 source:c:\users\suomalainen\documents\github\car-project\servo.c
 	"includes.h"
 
 1396221335 source:c:\users\suomalainen\documents\github\car-project\tests.c

@@ -10,10 +10,13 @@ extern struct PID_DATA *gPidStServo;
 
 
 /* Internal global variables */
-static volatile uint8_t gPreviousState = STATE_WAIT;
+static volatile uint8_t iPreviousState = STATE_WAIT;
+static int8_t iLastPositionErrorValue = 0;
+static bool iSearchTimerNotSet = true;
 //static int gIntegerSum = 0;
-static int8_t lastError = 0;
-static bool argh = true;
+
+
+/* Function implementations */
 
 /* not in use
 void runCar(void)
@@ -86,6 +89,10 @@ void setState(int8_t error)
 }
 */
 
+/**
+    Enable timer for searching track before giving up and stopping
+    the race. Timer value (ms) is determined by ROAD_SEARCH_TIME_MS.
+*/
 void setFindTimer()
 {
     timer_enable(TIMER_3, ROAD_SEARCH_TIME_MS); //set timer on if it isnt running
@@ -145,83 +152,134 @@ void bumper_calcValue(void)
     }
 }
 
+
+/**
+    Encapsulation for filtered bumper value
+*/
 inline uint8_t bumper_read(void)
 {
     return gBumperValue; //read sensor port data
 }
 
-
-
-
-
-void control_calc(int8_t error, int* speed, int* angle)
+/**
+    Calculate parameter values for speed and angle based on
+    error value.
+*/
+void control_calcParameters(int8_t error, int* speed, int* angle)
 {
 	if(error == CONTROL_NO_REF_POINT)
+	// Track is lost -> Track search mode //
 	{
-        if(argh){
+        if(iSearchTimerNotSet)
+        // Start search timer for track searching //
+        {
             setFindTimer();
-            argh = false;
+            iSearchTimerNotSet = false;
         }
 
-		//turn same direction where last time turned
-        if(lastError >= 0){
-            *angle = pid_Controller(0, 7, gPidStServo);}
-        else{
-            *angle = pid_Controller(0, -7, gPidStServo);}
-        *speed = motor_calcSpeed(7);
+		// continue turning to the  same direction where last time was turned
+        if(iLastPositionErrorValue >= 0)
+        {
+            *angle = pid_Controller(0, 7, gPidStServo);
+        }
+        else
+        {
+            *angle = pid_Controller(0, -7, gPidStServo);
+        }
+
+        *speed = motor_calcSpeed(MOTOR_ERROR_ON_SEARCH);
 	}
 	else if(error == GOAL_POINT)
+	// Car is on top of finish-line //
 	{
-        if(!argh){timer_disable(TIMER_3);argh = true;}
-        *angle = pid_Controller(0, lastError, gPidStServo);
+        if(!iSearchTimerNotSet)
+        {
+            timer_disable(TIMER_3);
+            iSearchTimerNotSet = true;
+        }
+        *angle = pid_Controller(0, iLastPositionErrorValue, gPidStServo);
         *speed = motor_calcSpeed(0);
 	}
 	else
+    // Normal driving situation //
 	{
-        if(!argh){timer_disable(TIMER_3);argh = true;}
+        if(!iSearchTimerNotSet)
+        // Back on track -> Disable search timer //
+        {
+            timer_disable(TIMER_3);
+            iSearchTimerNotSet = true;
+        }
+
+        // Calculate preferable parameter values //
 		*angle = pid_Controller(0, error, gPidStServo);
 		*speed = motor_calcSpeed(error);
 	}
 }
 
-int8_t calcPositionError(uint8_t sensorValues)
+/**
+    Calculate position error from front sensor values.
+    Returns error value [-7, 7] or defined GOAL_POINT or
+    CONTROL_NO_REF_POINT.
+*/
+int8_t control_calcPositionError(uint8_t sensorValues)
 {
-
     int8_t error = 0;
     int8_t mostLeft = 20;
     int8_t mostRight = 20;
 
-    for(int8_t i = 0;i < 8;i++){
-	    if(sensorValues & (0x80 >> i)){
+    // Check sensor readings for a line detection starting from the outer side
+    for(int8_t i = 0;i < 8;i++)
+    {
+	    if(sensorValues & (0x80 >> i))
+        {
 		    mostLeft = i;
 		    break;
 	    }
     }
-    for(int8_t i = 0;i < 8;i++){
-	    if(sensorValues & (0x01 << i)){
+    for(int8_t i = 0;i < 8;i++)
+    {
+	    if(sensorValues & (0x01 << i))
+	    {
 		    mostRight = i;
 		    break;
-	    }
+        }
     }
 
-    if(mostLeft == 20 || mostRight == 20){//no reference point found out of track
-      if(lastError < 7 && lastError > -7){
-        error = lastError;
-      }else{
+    if(mostLeft == 20 || mostRight == 20)
+    //no reference point found out of track //
+    {
+      if(iLastPositionErrorValue < 7 && iLastPositionErrorValue > -7)
+      // Previous detection was from one of the inner sensors
+      {
+        // use previous value //
+        error = iLastPositionErrorValue;
+      }
+      else
+      // Previous detection was from one of the outer sensors -> track lost case
+      {
         error = CONTROL_NO_REF_POINT;
       }
-    }else if(abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH){
-      error = GOAL_POINT;
-    }else{
+    }
+    else if (abs((7 - mostLeft) - mostRight) > GOAL_MIN_WIDTH)
+    // New value found: finish line detected  //
+    {
+        error = GOAL_POINT;
+    }
+    else
+    // New value found: calculate new error value
+    {
         error = (int8_t)7 - (int8_t)2*mostRight;
-        lastError = error;
+        iLastPositionErrorValue = error;
     }
 
     //LCD_Write_int(error,6);
-
     return error;
 }
 
+/**
+    Executes new driving commands (speed and angle) based on
+    given values.
+*/
 void control_execute(int speed, int angle)
 {
     servo_writeControl(angle);//Servo

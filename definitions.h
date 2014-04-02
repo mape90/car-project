@@ -1,3 +1,7 @@
+/********************************
+ * Settings and defined values  *
+ ********************************/
+
 #ifndef DEFINITIONS_HH
 #define DEFINITIONS_HH
 
@@ -35,6 +39,7 @@
 #define MOTOR_I_MAX                     50  //max value
 
 #define MOTOR_SPEED_REDUCE              13
+#define MOTOR_ERROR_ON_SEARCH           7
 
 #define MOTOR_P                         3000 //3080
 #define MOTOR_I                         10

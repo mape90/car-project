@@ -7,6 +7,10 @@ extern int gCurrentRPM;
 
 
 /* function implementations */
+
+/**
+ Initialize drive motor and it's timer
+*/
 void motor_init(void)
 {
     DDRH |= (1 << MOTOR_PIN_PWM);
@@ -30,70 +34,103 @@ int motor_calcSpeed(int8_t error)
         return 0;
 }
 
+/**
+    Sets motor speed based on tachometer's feedback and intended RPM value.
+*/
 void motor_setSpeed(int rpm)
 {
     gTachometerValue = tachometer_read();
     gCurrentRPM = tachometer_value2rpm(gTachometerValue, (rpm<0)? MOTOR_BACKWARD : MOTOR_FORWARD);
 
-    if(rpm == 0){ // break
+    if(rpm == 0)
+    // break //
+    {
         motor_writePWM(0);
-    }else{
-        //writeMotorPWM(motorPI(rpm - gCurrentRPM));
+    }
+    else
+    {
+        // Write corrected value from pid controller to motor PWM
         motor_writePWM(pid_Controller(rpm, gCurrentRPM, gPidStMotor));
+
+        //writeMotorPWM(motorPI(rpm - gCurrentRPM)); // old PI-controller
     }
 
 }
 
+/**
+ Encapsulation for current RPM value
+*/
 inline int motor_getRPM(void)
 {
     return gCurrentRPM;
 }
 
+/**
+ Write Drive motor's PWM value. The value is limited by
+ maximum acceleration (MOTOR_ACC_MAX) and motor value boundaries
+ (MOTOR_CONTROL_MAX and MOTOR_CONTROL_MIN).
+*/
 void motor_writePWM(int pwm)
 {
-    static int lastPWM = 0;
+    static int prevPwmValue = 0;
 
     if(pwm == 0){           //secure that 0 pwm will always stop motor in all cases bacause min pwm can be over 0
         PORTK &= 0xfc;      //break: 00
         OCR4A = 0;          //set pwm sycle to zero
-        lastPWM = 0;
+        prevPwmValue = 0;
         return;
     }
 
     //limit acceleration
-
-    if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
-        pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
+    if(abs(pwm - prevPwmValue) > MOTOR_ACC_MAX)
+    {
+        pwm = prevPwmValue + (((pwm - prevPwmValue) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
+
     //limit control values
-    if(pwm > MOTOR_CONTROL_MAX){
+    if(pwm > MOTOR_CONTROL_MAX)
+    {
         //LCD_Write_String("TEST",10);
         pwm = MOTOR_CONTROL_MAX;
-    }else if(pwm < MOTOR_CONTROL_MIN){
+    }
+    else if(pwm < MOTOR_CONTROL_MIN)
+    {
         pwm = MOTOR_CONTROL_MIN;
     }
 
-    if(lastPWM != pwm){
+    if(prevPwmValue != pwm)
+    // Update only if value is new //
+    {
         if(pwm > 0)
         {
             PORTK &= 0xfc;       //Clockwise, clear bits
             PORTK |= (1 << MOTOR_PIN_INA);
             OCR4A = pwm;
-        }else{
+        }else
+        {
             PORTK &= 0xfc;       //Counter-clockwise (CCW)
             PORTK |= (1 << MOTOR_PIN_INB);
             OCR4A = abs(pwm);   //set pwm value positive
         }
-        lastPWM = pwm;
+        prevPwmValue = pwm;
     }
 }
 
-//val tacho values from last 10 readings ~1sec
-int tachometer_value2rpm(uint16_t val, uint8_t dir){
+
+/**
+ Transforms tachometer counter value to RPM (speed)
+*/
+int tachometer_value2rpm(uint16_t val, uint8_t dir)
+//val tacho values from last 10 readings
+{
     val = val * 1000/LOOP_TIME_MS/TACHOMETER_BUFFER_SIZE*60/TICKS_PER_ROTATION;  // 100ms 2 tic per rotation. 1 tic -> 10 tic per sec 5 rotation per sec 300rpm
-    if(dir == MOTOR_FORWARD){
+
+    if(dir == MOTOR_FORWARD)
+    {
         return (int)val;
-    }else{
+    }
+    else
+    {
         return -1*(int)val;
     }
 }
@@ -115,17 +152,26 @@ int motorPI(int error_in_speed){
     return control;
 }*/
 
-//this function gives sum of 10 last readings from tacho meter
+
+/**
+ Read tachometer value. The value is buffered with buffer
+ of size TACHOMETER_BUFFER_SIZE and a sum from latest values
+ is returned. The buffer balances the value and determines from how
+ long time period the values are collected from.
+*/
 uint16_t tachometer_read(void)
+//this function gives sum of 10 last readings from tacho meter
 {
     static uint8_t tachoBufferCursor = 0;
     static uint8_t buffer[TACHOMETER_BUFFER_SIZE] = {0};
+    uint16_t temp = 0;
 
 	buffer[tachoBufferCursor] = TCNT5;
     tachoBufferCursor = (tachoBufferCursor + 1) % TACHOMETER_BUFFER_SIZE;
 	TCNT5 = 0;
-    uint16_t temp = 0;
-    for(uint8_t i = 0; i < TACHOMETER_BUFFER_SIZE; i++){
+
+    for(uint8_t i = 0; i < TACHOMETER_BUFFER_SIZE; i++)
+    {
         temp += buffer[i];
     }
 	return temp;

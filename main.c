@@ -26,23 +26,23 @@ void loop(void);
 void setup(void);
 
 /* Global variables */
-volatile uint8_t gState = STATE_WAIT;
-volatile bool gLoopTimeNotElapsed = true;
-volatile bool gStarted = false;
-volatile bool gIsRunningState = false;
+volatile uint8_t gState = STATE_WAIT;           // Current state
+volatile bool gLoopTimeNotElapsed = true;       // Synchronization flag for loop time
+volatile bool gStarted = false;                 // Sync flag for waiting first button push
+volatile bool gIsRunningState = false;          // sync flag for filtering multi-push from button press
 
-char gPrevPositionError = 0;
-int gCurrentRPM = 0;
-uint8_t gLCDErrorFlags = 0;
-uint8_t gBumperValue = 0;
-uint8_t gLapCount = 0;
-uint16_t gTachometerValue = 0;
-bool gFindRoadTimerElapsed = false;
-bool gUICanUpdate = true;
-bool gStoppedTextWritten = false;
+char gPrevPositionError = 0;                    // previous error state for adjusting direction
+int gCurrentRPM = 0;                            // current speed in RPM
+uint8_t gLCDErrorFlags = 0;                     // error codes for displaying in LCD
+uint8_t gBumperValue = 0;                       // current filtered bumper value
+uint8_t gLapCount = 0;                          // lap counter
+uint16_t gTachometerValue = 0;                  // tachometer value counter
+bool gFindRoadTimerElapsed = false;             // flag for find road timer
+bool gUICanUpdate = true;                       // flag for reducing LCD updates
+bool gStoppedTextWritten = false;               // flag for writing stopped text only once
 
-struct PID_DATA *gPidStMotor;
-struct PID_DATA *gPidStServo;
+struct PID_DATA *gPidStMotor;                   // PID data: Motor
+struct PID_DATA *gPidStServo;                   // PID data: Servo
 
 //char gCurrentError = 0;
 //int gServoValue = 0;
@@ -150,12 +150,12 @@ void setup(void)
     EIMSK = _BV(INT5);
 
     // Init PID: Drive Motors //
-    gPidStMotor = malloc(sizeof(*gPidStMotor));
+    gPidStMotor = malloc(sizeof(*gPidStMotor));  // reserve space for struck handle
     pid_Init(MOTOR_P, MOTOR_I, MOTOR_D, gPidStMotor);
     //gPidStMotor->maxSumError = 10;//MOTOR_I_MAX/ (gPidStMotor->I_Factor + 1);
 
     // Init PID: Servo Motors //
-    gPidStServo = malloc(sizeof(*gPidStServo));
+    gPidStServo = malloc(sizeof(*gPidStServo)); // reserve space for struck handle
     pid_Init(SERVO_P, SERVO_I, SERVO_D, gPidStServo);
     gPidStServo->maxSumError = SERVO_I_MAX/ (gPidStServo->I_Factor + 1);
 
@@ -177,8 +177,8 @@ void loop(void)
     if(!gFindRoadTimerElapsed)
     {
         int angle, speed;
-        int8_t positionError = calcPositionError(bumper_read());
-        control_calc(positionError, &speed, &angle);
+        int8_t positionError = control_calcPositionError(bumper_read());
+        control_calcParameters(positionError, &speed, &angle);
         control_execute(speed, angle);
         gPrevPositionError = positionError;
     } else

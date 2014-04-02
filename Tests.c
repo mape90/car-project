@@ -41,8 +41,8 @@ void test_controll_loop()
 { //test everything elese than states
     if(!gFindRoadTimerElapsed){
         int angle, speed;
-        int8_t error = calcPositionError(bumper_read());
-        control_calc(error, &speed, &angle);
+        int8_t error = control_calcPositionError(bumper_read());
+        control_calcParameters(error, &speed, &angle);
         control_execute(speed, angle);
         gPrevPositionError = error;
     }else{
