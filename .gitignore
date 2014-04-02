@@ -14,7 +14,11 @@
 
 # temp files
 *.*̃
--cb.*
+*-cb.*
+*.cbp
+*.cscope_file_list
+*.depend
+*.layout
 LICENSE
 
 # yaamake

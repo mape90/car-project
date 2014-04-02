@@ -8,7 +8,7 @@
 #define TICKS_PER_ROTATION              2
 #define ROAD_SEARCH_TIME_MS             4000
 #define MAX_LAP_COUNT                   1
-#define LOOP_TIME_MS                    3 
+#define LOOP_TIME_MS                    3
 #define GOAL_MIN_WIDTH                  1
 
 #define GOAL_POINT                      ((int8_t)100)
@@ -57,7 +57,7 @@
 
 
 /* Port / pin -settings */
-#define BUMPER_REGISTER                 PINA      
+#define BUMPER_REGISTER                 PINA
 #define SERVO_PIN                       PB5
 #define MOTOR_PIN_PWM                   PH3
 #define MOTOR_PIN_INA                   PK0
@@ -84,10 +84,6 @@
 
 #define SERVO_ON                        ((uint8_t)1)
 #define SERVO_OFF                       ((uint8_t)0)
-
-
-
-
 
 
 #define STATE_WAIT                      ((uint8_t)1)

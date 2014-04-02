@@ -1,15 +1,19 @@
 #ifndef MOTOR_HH
 #define MOTOR_HH
 
-#include "includes.h"
+void                motor_init(void);
+int                 motor_calcSpeed(int8_t error);
+void                motor_setSpeed(int rpm);
 
-void motor_init(void);
-void setMotorSpeed(int rpm);
-int calcMotorSpeed(int8_t error);
-int tachometer2rpm(uint16_t, uint8_t);
-int motorPI(int);
-uint16_t readTachometer(void);
-void writeMotorPWM(int pwm);
-int getMotorRPM(void);
+void                motor_writePWM(int pwm);
+int                 motor_getRPM(void);
+
+int                 tachometer_value2rpm(uint16_t, uint8_t);
+uint16_t            tachometer_read(void);
+
+
+
+/* not in use */
+//int                 motorPI(int);
 
 #endif

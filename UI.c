@@ -3,7 +3,7 @@
 /* External global variables */
 extern uint8_t gState;
 extern bool gUICanUpdate;
-extern int8_t gLastError;
+extern int8_t gPrevPositionError;
 extern int gCurrentRPM;
 extern uint8_t gLCDErrorFlags;
 
@@ -13,8 +13,8 @@ void LCD_update()
     if(gUICanUpdate){
         LCD_clear();
         LCD_state(gState);
-        LCD_error(gLastError);
-        LCD_Write_int(gCurrentRPM, 10);
+        LCD_error(gPrevPositionError);
+        LCD_writeInt(gCurrentRPM, 10);
         LCD_setTimer();
         gUICanUpdate = false;
     }else{
@@ -22,6 +22,7 @@ void LCD_update()
     }
 }
 
+/* not in use
 inline void reportError(uint8_t errNo)
 {
     if(!(gLCDErrorFlags & (0x01 << errNo))){
@@ -30,7 +31,8 @@ inline void reportError(uint8_t errNo)
         timer_zero_value(TIMER_2);
     }
 }
-
+*/
+/* Not in use
 void handleButtonPress(void)
 {
 	switch(gState)
@@ -47,7 +49,7 @@ void handleButtonPress(void)
 			break;
     }
 }
-
+*/
 void USART_Transmit( unsigned char data)
 {
 	// Wait for empty transmit buffer
@@ -77,31 +79,13 @@ void USART_LCD_Init(unsigned int ubrr){
 	while (RECEIVED != USART_Receive());
 }
 
-void LCD_ClearRow(uint8_t row)
+void LCD_clearRow(uint8_t row)
 {
     char emptyLine[] = "                    ";
-    LCD_Write_String(emptyLine, row);
+    LCD_writeString(emptyLine, row);
 }
 
-#define LCD_INFO_MAX_LENGTH 20
-void LCD_Write_Info(char* prefix, int value, uint8_t row)
-{
-    // cut string from 16 chars //
-
-    if (strlen(prefix ) > 16)
-        prefix[16] = '\0';
-
-    char buffer[LCD_INFO_MAX_LENGTH];
-    char intValue[8];
-    itoa(value, intValue, 10);
-
-    strncpy(buffer, prefix, strlen(prefix));
-    strncat(buffer, intValue, strlen(intValue));
-
-    LCD_Write_String(buffer, row);
-}
-
-void LCD_Write_String(char* str, uint8_t row)
+void LCD_writeString(char* str, uint8_t row)
 {
 	USART_Transmit(DRAW_STRING);
 	USART_Transmit(COLUMN_0);
@@ -143,7 +127,7 @@ void LCD_state(uint8_t gState)
             strncpy(state_char, "Unknown State!\0", 15);
 	}
 
-	LCD_Write_String(state_char,ROW_1);
+	LCD_writeString(state_char,ROW_1);
 
 }
 
@@ -164,22 +148,22 @@ void LCD_error(char error)
 	}
 	char str[25] = "Error: ";
 	strncat(str, err,strlen(err));
-	LCD_Write_String(str,ROW_2);
+	LCD_writeString(str,ROW_2);
 }
 
 void LCD_speed(char* speed)
 {
 	char str[25] = "Speed: ";
 	strcat(str,speed);
-	LCD_Write_String(str, ROW_3);
+	LCD_writeString(str, ROW_3);
 }
 
-void LCD_Write_int(int num, uint8_t row)
+void LCD_writeInt(int num, uint8_t row)
 {
 	char temp[10];
 	itoa(num, temp,10);
 
-	LCD_Write_String(temp,row);
+	LCD_writeString(temp,row);
 }
 
 void LCD_clear(void)
@@ -187,12 +171,12 @@ void LCD_clear(void)
 	USART_Transmit(CLEAR);
 	while (RECEIVED != USART_Receive());
 }
-inline void LCDClearErrorFlags(void)
+inline void LCD_clearErrorFlags(void)
 {
     gLCDErrorFlags = 0;
 }
 
-inline void LCD_WriteErrorFlags(uint8_t errNo)
+inline void LCD_writeErrorFlags(uint8_t errNo)
 {
     gLCDErrorFlags |= (0x01 << errNo);
 }

@@ -2,9 +2,11 @@
 
 /* External Global Variables */
 extern uint16_t gTachometerValue;
-extern int gCurrentRPM;
 extern struct PID_DATA* gPidStMotor;
+extern int gCurrentRPM;
 
+
+/* function implementations */
 void motor_init(void)
 {
     DDRH |= (1 << MOTOR_PIN_PWM);
@@ -17,26 +19,37 @@ void motor_init(void)
     //PORTK = 0x00;
 }
 
-void setMotorSpeed(int rpm)
+/**
+* Calculates drive motor speed based on error
+*/
+int motor_calcSpeed(int8_t error)
 {
-    gTachometerValue = readTachometer();
-    gCurrentRPM = tachometer2rpm(gTachometerValue, (rpm<0)? MOTOR_BACKWARD : MOTOR_FORWARD);
+    if (error > -8 && error < 8)
+        return MOTOR_SPEED_MAX_RPM - abs(error)*MOTOR_SPEED_REDUCE;
+    else
+        return 0;
+}
+
+void motor_setSpeed(int rpm)
+{
+    gTachometerValue = tachometer_read();
+    gCurrentRPM = tachometer_value2rpm(gTachometerValue, (rpm<0)? MOTOR_BACKWARD : MOTOR_FORWARD);
 
     if(rpm == 0){ // break
-        writeMotorPWM(0);
+        motor_writePWM(0);
     }else{
         //writeMotorPWM(motorPI(rpm - gCurrentRPM));
-        writeMotorPWM(pid_Controller(rpm, gCurrentRPM, gPidStMotor));
+        motor_writePWM(pid_Controller(rpm, gCurrentRPM, gPidStMotor));
     }
 
 }
 
-inline int getMotorRPM(void)
+inline int motor_getRPM(void)
 {
     return gCurrentRPM;
 }
 
-void writeMotorPWM(int pwm)
+void motor_writePWM(int pwm)
 {
     static int lastPWM = 0;
 
@@ -46,9 +59,9 @@ void writeMotorPWM(int pwm)
         lastPWM = 0;
         return;
     }
-    
+
     //limit acceleration
-    
+
     if(abs(pwm - lastPWM) > MOTOR_ACC_MAX){
         pwm = lastPWM + (((pwm - lastPWM) < 0) ? -1*MOTOR_ACC_MAX : MOTOR_ACC_MAX);
     }
@@ -76,7 +89,7 @@ void writeMotorPWM(int pwm)
 }
 
 //val tacho values from last 10 readings ~1sec
-int tachometer2rpm(uint16_t val, uint8_t dir){
+int tachometer_value2rpm(uint16_t val, uint8_t dir){
     val = val * 1000/LOOP_TIME_MS/TACHOMETER_BUFFER_SIZE*60/TICKS_PER_ROTATION;  // 100ms 2 tic per rotation. 1 tic -> 10 tic per sec 5 rotation per sec 300rpm
     if(dir == MOTOR_FORWARD){
         return (int)val;
@@ -103,7 +116,7 @@ int motorPI(int error_in_speed){
 }*/
 
 //this function gives sum of 10 last readings from tacho meter
-uint16_t readTachometer(void)
+uint16_t tachometer_read(void)
 {
     static uint8_t tachoBufferCursor = 0;
     static uint8_t buffer[TACHOMETER_BUFFER_SIZE] = {0};
